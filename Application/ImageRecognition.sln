@@ -1,0 +1,85 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageRecognition.Frontend", "UI\mvc-frontend\ImageRecognition\ImageRecognition.Frontend.csproj", "{A86D2AC3-B17E-4BD0-A2E4-202C37FAADCE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{E94B8A90-34BD-4F82-B641-1254DDF37CCA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StepFunctions", "StepFunctions", "{45115497-E073-4E7E-AA88-92D17D7F45E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "S3Trigger", "S3Trigger", "{33BA9BD1-DE13-42C8-91F4-4B29DE1494A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CloudFormation.Template", "CloudFormation.Template", "{42D8363B-6F76-4B00-819F-7D418695A5CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s3Trigger", "s3Trigger\s3Trigger.csproj", "{39B2C609-0D3A-4EF3-B18B-67BC51B96E3F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "StepFunctions\Common\Common.csproj", "{85E30B75-956C-4515-8586-E8D70552701B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "extract-image-metadata", "StepFunctions\extract-image-metadata\extract-image-metadata.csproj", "{EFA964F8-F2B7-4CD2-92CA-292FC2038F5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rekognition", "StepFunctions\rekognition\rekognition.csproj", "{2FD0DAB5-CEB3-4DDE-A85D-B94C769BA965}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "store-image-metadata", "StepFunctions\store-image-metadata\store-image-metadata.csproj", "{F23C6ED2-349A-41D6-B39F-48A4D223D8BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "thumbnail", "StepFunctions\thumbnail\thumbnail.csproj", "{20AE9E51-DE47-458E-8416-746E29ADA118}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transform-metadata", "StepFunctions\transform-metadata\transform-metadata.csproj", "{69FB6109-B5F8-4EBA-9F3A-CB167527E21E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A86D2AC3-B17E-4BD0-A2E4-202C37FAADCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A86D2AC3-B17E-4BD0-A2E4-202C37FAADCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A86D2AC3-B17E-4BD0-A2E4-202C37FAADCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A86D2AC3-B17E-4BD0-A2E4-202C37FAADCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39B2C609-0D3A-4EF3-B18B-67BC51B96E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39B2C609-0D3A-4EF3-B18B-67BC51B96E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39B2C609-0D3A-4EF3-B18B-67BC51B96E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39B2C609-0D3A-4EF3-B18B-67BC51B96E3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85E30B75-956C-4515-8586-E8D70552701B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85E30B75-956C-4515-8586-E8D70552701B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85E30B75-956C-4515-8586-E8D70552701B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85E30B75-956C-4515-8586-E8D70552701B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFA964F8-F2B7-4CD2-92CA-292FC2038F5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFA964F8-F2B7-4CD2-92CA-292FC2038F5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFA964F8-F2B7-4CD2-92CA-292FC2038F5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFA964F8-F2B7-4CD2-92CA-292FC2038F5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FD0DAB5-CEB3-4DDE-A85D-B94C769BA965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FD0DAB5-CEB3-4DDE-A85D-B94C769BA965}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FD0DAB5-CEB3-4DDE-A85D-B94C769BA965}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FD0DAB5-CEB3-4DDE-A85D-B94C769BA965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F23C6ED2-349A-41D6-B39F-48A4D223D8BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F23C6ED2-349A-41D6-B39F-48A4D223D8BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F23C6ED2-349A-41D6-B39F-48A4D223D8BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F23C6ED2-349A-41D6-B39F-48A4D223D8BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20AE9E51-DE47-458E-8416-746E29ADA118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20AE9E51-DE47-458E-8416-746E29ADA118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20AE9E51-DE47-458E-8416-746E29ADA118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20AE9E51-DE47-458E-8416-746E29ADA118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69FB6109-B5F8-4EBA-9F3A-CB167527E21E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69FB6109-B5F8-4EBA-9F3A-CB167527E21E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69FB6109-B5F8-4EBA-9F3A-CB167527E21E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69FB6109-B5F8-4EBA-9F3A-CB167527E21E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A86D2AC3-B17E-4BD0-A2E4-202C37FAADCE} = {E94B8A90-34BD-4F82-B641-1254DDF37CCA}
+		{39B2C609-0D3A-4EF3-B18B-67BC51B96E3F} = {33BA9BD1-DE13-42C8-91F4-4B29DE1494A3}
+		{85E30B75-956C-4515-8586-E8D70552701B} = {45115497-E073-4E7E-AA88-92D17D7F45E9}
+		{EFA964F8-F2B7-4CD2-92CA-292FC2038F5D} = {45115497-E073-4E7E-AA88-92D17D7F45E9}
+		{2FD0DAB5-CEB3-4DDE-A85D-B94C769BA965} = {45115497-E073-4E7E-AA88-92D17D7F45E9}
+		{F23C6ED2-349A-41D6-B39F-48A4D223D8BF} = {45115497-E073-4E7E-AA88-92D17D7F45E9}
+		{20AE9E51-DE47-458E-8416-746E29ADA118} = {45115497-E073-4E7E-AA88-92D17D7F45E9}
+		{69FB6109-B5F8-4EBA-9F3A-CB167527E21E} = {45115497-E073-4E7E-AA88-92D17D7F45E9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B53A70CE-0F03-41EB-B317-DA4B7CE3019A}
+	EndGlobalSection
+EndGlobal

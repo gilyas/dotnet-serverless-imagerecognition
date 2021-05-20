@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <AWSProjectType>Lambda</AWSProjectType>
+
+    <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+	<PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
+	<PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.1.0" />
+
+
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.1.0" />
+    <PackageReference Include="AWSSDK.AppSync" Version="3.7.0.16" />
+    <PackageReference Include="GraphQL.Client" Version="3.2.3" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.5" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.3" />
+    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="3.2.3" />
+  </ItemGroup>
+    <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+</Project>
