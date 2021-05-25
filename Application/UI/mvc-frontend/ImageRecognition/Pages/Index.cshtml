@@ -4,24 +4,30 @@
     ViewData["Title"] = "Albums";
 }
 
-
-<form id="admin" method="post" action="~/album/new/create/">
-    <input type="text" name="name" id="name" aria-label="Album name" placeholder="Album name" required />
-    <input type="submit" id="newalbum" data-progress="Creating..." value="New album">
-</form>
+<div class="ui segment">
+    <h3 class="ui header">Add a new album</h3>
+    <div class="ui action left icon input">
+        <form method="post" action="~/album/new/create/">
+            <input type="text" name="name" id="name" aria-label="Album name" placeholder="Album name" required />
+            <input type="submit" id="newalbum" data-progress="Creating..." value="New album">
+        </form>
+    </div>
+</div>
 
 @if (this.Model.Albums.Count == 0)
 {
     <p>There are no albums yet. Create new albums and upload photos.</p>
 }
 
-<h2>Albums</h2>
-
-<div class="albumlist pic">
-    @{
-        foreach (Album album in this.Model.Albums)
+<div class="ui segment">
+    <h3 class="ui header">My Albums</h3>
+    <div role="list" class="ui divided relaxed list">
+        @foreach (Album album in this.Model.Albums)
         {
-            <a href="/album/@album.AlbumId/" data-text="@album.Name">@album.Name</a>
+            <div role="listitem" class="item">
+                <a href="/album/@album.AlbumId/">@album.Name</a>
+            </div>
         }
-    }
+
+    </div>
 </div>

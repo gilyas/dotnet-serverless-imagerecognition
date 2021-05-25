@@ -12,5 +12,7 @@ namespace ImageRecognition.Frontend.Models
         public string Width { get; set; }
 
         public string Key { get; set; }
+
+        public string Url { get; set; }
     }
 }

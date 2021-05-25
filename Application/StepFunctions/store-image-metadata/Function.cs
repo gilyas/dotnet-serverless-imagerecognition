@@ -59,7 +59,8 @@ namespace store_image_metadata
                     Height = thumbnail?.height,
                 },
                 ObjectDetected = labels.Select(l => l.Name).ToArray(),
-                GeoLocation = input.ExtractedMetadata?.Geo
+                GeoLocation = input.ExtractedMetadata?.Geo,
+                UpdatedDate = DateTime.UtcNow
             };
 
             // update photo table.

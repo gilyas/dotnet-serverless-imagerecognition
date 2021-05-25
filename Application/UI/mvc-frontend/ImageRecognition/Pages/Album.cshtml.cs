@@ -35,11 +35,7 @@ namespace ImageRecognition.Frontend.Pages
 
         [BindProperty]
         [Required]
-        public string PhotoName { get; set; }
-
-        [BindProperty]
-        [Required]
-        public IFormFile PhotoSourceImage { get; set; }
+        public ICollection<IFormFile> PhotoSourceImages { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string albumId)
         {
@@ -62,12 +58,12 @@ namespace ImageRecognition.Frontend.Pages
 
         public async Task<IActionResult> OnPostUploadAsync(string albumId)
         {
-            //foreach (var file in files)
-            //{
-                var fileName = WebUtility.HtmlEncode(Path.GetFileName(PhotoSourceImage.FileName));
+            foreach (var photoSourceImage in PhotoSourceImages)
+            {
+                var fileName = WebUtility.HtmlEncode(Path.GetFileName(photoSourceImage.FileName));
                 var extension = Path.GetExtension(fileName);
 
-                if (PhotoSourceImage.Length > MAX_SOURCE_IMAGE_SIZE)
+                if (photoSourceImage.Length > MAX_SOURCE_IMAGE_SIZE)
                 {
                     return BadRequest($"{fileName} is larger then the max size of {MAX_SOURCE_IMAGE_SIZE}");
                 }
@@ -76,13 +72,13 @@ namespace ImageRecognition.Frontend.Pages
                     return BadRequest($"File types {extension} are not supported, only jpg and png files");
                 }
 
-                using (var stream = PhotoSourceImage.OpenReadStream())
+                using (var stream = photoSourceImage.OpenReadStream())
                 {
                     await _imageRecognitionManager
                             .AddPhoto(AlbumId, HttpContext.User.Identity.Name, fileName, stream)
                             .ConfigureAwait(false);
                 }
-            //}
+            }
             return new RedirectResult($"~/album/{WebUtility.UrlEncode(AlbumId).Replace('+', ' ')}/");
 
         }

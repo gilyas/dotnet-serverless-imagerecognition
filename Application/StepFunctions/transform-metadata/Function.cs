@@ -61,7 +61,7 @@ namespace transform_metadata
             GeoLocation geo = new GeoLocation()
             {
                 Latitude = ParseCoordinate(exifProfile.GetValue(ExifTag.GPSLatitudeRef)?.Value,
-                                        exifProfile.GetValue(ExifTag.GPSLongitude)?.Value),
+                                        exifProfile.GetValue(ExifTag.GPSLatitude)?.Value),
 
                 Longtitude = ParseCoordinate(exifProfile.GetValue(ExifTag.GPSLongitudeRef)?.Value,
                                         exifProfile.GetValue(ExifTag.GPSLongitude)?.Value)

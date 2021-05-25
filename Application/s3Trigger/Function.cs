@@ -78,7 +78,8 @@ namespace s3Trigger
             {
                 PhotoId = objectId,
                 SfnExecutionArn = stepResponse.ExecutionArn,
-                ProcessingStatus = ProcessingStatus.Running
+                ProcessingStatus = ProcessingStatus.Running,
+                UpdatedDate = DateTime.UtcNow
             };
 
             await this._ddbContext.SaveAsync(photo).ConfigureAwait(false);

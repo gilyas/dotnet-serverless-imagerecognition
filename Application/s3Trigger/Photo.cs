@@ -19,5 +19,8 @@ namespace s3Trigger
         [DynamoDBProperty]
         public string SfnExecutionArn { get; set; }
 
+        [DynamoDBProperty]
+        public DateTime? UpdatedDate { get; set; }
+
     }
 }

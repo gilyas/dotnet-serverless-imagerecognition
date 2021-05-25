@@ -1,63 +1,90 @@
 ﻿@page "{albumId}/{handler?}"
 @model AlbumModel
-@{
-    //ViewData["Title"] = Model.Album.Name;
-    //ViewData["Description"] = $"The photo album \"{Model.Album.Name}\" containing {Model.Album.Photos?.Count} photos including {string.Join(", ", Model.Album.Photos?.Take(5))}";
-    //ViewData["Image"] = Request.Scheme + "://" + Request.Host + Model.Album.CoverPhoto?.GetThumbnailLink((int)ImageType.Full, out int h);
-}
 
-<div asp-validation-summary="All"></div>
-<form method="POST" enctype="multipart/form-data">
-    <div class="row">
-        <div class="col-md-10 form-group">
-            <label class="control-label">Select photo to upload.</label>
-            <input type="file"
-                   class="form-control form-control-file"
-                   asp-for="PhotoSourceImage"
-                   accept=".jpg,.png"
-                   style="height:auto" />
-        </div>
-        
-        <div class="col-md-10 form-group">
-            <label class="control-label">Optional Name</label>
-            <input asp-for="PhotoName" class="form-control" />
+
+<div class="ui padded grid">
+    <div class="column">
+        <div class="ui segment">
+            <h3 class="ui header">@Model.Album.Name</h3>
+            <div>
+                <div asp-validation-summary="All"></div>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-10 form-group">
+                            <label class="control-label">Select photos to upload.</label>
+                            <input type="file"
+                                   class="form-control form-control-file"
+                                   id="files"
+                                   asp-for="PhotoSourceImages"
+                                   aria-label="Upload photo"
+                                   required multiple
+                                   style="height:auto"
+                                   accept="image/*" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <input type="submit" asp-page-handler="upload" value="Upload Photo" data-progress="Uploading..." class="btn btn-primary" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <div class="ui hidden divider"></div>
+                <div class="ui cards">
+                    @foreach (var photo in Model.Album.Photos)
+                    {
+                        if (photo.ProcessingStatus != ProcessingStatus.Succeeded)
+                        {
+                            <div class="ui card">
+                                <div class="ui active transition visible dimmer" style="display: flex !important;">
+                                    <div class="content">
+                                        <div class="ui text loader"> Processing </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="ui card">
+                                <div class="center aligned content">
+                                    <div>
+                                        <div style="position: relative;">
+                                            <img src="@photo.Thumbnail.Url">
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="content">
+                                    <div class="meta"><span class="date">Uploaded: @photo.UploadTime</span></div>
+                                    <div class="description">
+                                        <p><b>Detected labels:</b></p>
+                                        @if (photo?.ObjectDetected != null)
+                                        {
+                                            @foreach (var label in photo.ObjectDetected)
+                                            {
+                                                <div class="ui orange basic label">@label</div>
+                                            }
+                                        }
+                                        <p><b>Image size: </b>@photo.FullSize.Height x @photo.FullSize.Width</p>
+                                        @if (photo?.GeoLocation != null)
+                                        {
+                                            <p><strong>Geolocation: </strong>@photo.GeoLocation.ToString()</p>
+                                        }
+                                        @if (photo?.ExifModel != null)
+                                        {
+                                            <p><strong>Device: </strong>@photo.ExifMake @photo.ExifModel</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-10">
-            <input type="submit" asp-page-handler="upload" value="Upload Photo" data-progress="Uploading..." class="btn btn-primary" />
-        </div>
-    </div>
-</form>
-
-
-
-<div id="admin">
-    @*<form method="post" enctype="multipart/form-data">
-        <input type="file" id="files" aria-label="Upload photo" name="files" required multiple accept="image/*" />
-        <input type="submit" asp-page-handler="upload" data-progress="Uploading..." id="btnfiles" value="Upload photos" />
-    </form>*@
-
-    <form method="post" class="delete">
-        <input type="submit" asp-page-handler="delete" id="deletealbum" aria-label="Delete album..." title="Delete album..." value="X" />
-    </form>
-</div>
-
-<div class="title" itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-    <paging model="@Model.Album" />
-    <h2 itemscope itemtype="http://schema.org/Thing" itemprop="item">
-        <span itemprop="name">@Model.Album.Name</span>
-    </h2>
-    <meta itemprop="position" content="2" />
-</div>
-
-<div class="pic photolist">
-    @{
-        foreach (Photo photo in Model.Album.Photos)
-        {
-            @*<a href="@photo.Link" data-text="@photo.DisplayName">
-                    <img photo="@photo" Type="Thumbnail" />
-                </a>*@
-        }
-    }
 </div>

@@ -44,10 +44,11 @@ namespace ImageRecognition.Frontend
                     AlbumId = albumId,
                     Bucket = _appOptions.PhotoStorageBucket,
                     CreatedDate = DateTime.UtcNow,
+                    UpdatedDate = DateTime.UtcNow,
                     PhotoId = photoId,
                     Owner = userId,
                     ProcessingStatus = ProcessingStatus.Pending,
-                    
+                    UploadTime = DateTime.UtcNow
                 };
 
                 await this._ddbContext.SaveAsync(photo).ConfigureAwait(false);
@@ -121,8 +122,25 @@ namespace ImageRecognition.Frontend
             {
                 var photoQuery = this._ddbContext.QueryAsync<Photo>(albumId, new DynamoDBOperationConfig { IndexName = "albumID-uploadTime-index" });
                 album.Photos = await photoQuery.GetRemainingAsync().ConfigureAwait(false);
+                foreach (var photo in album.Photos)
+                {
+                    if (photo.ProcessingStatus == ProcessingStatus.Succeeded)
+                    {
+                        photo.Thumbnail.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
+                        {
+                            BucketName = _appOptions.PhotoStorageBucket,
+                            Key = $"private/resized/{photo.PhotoId}",
+                            Expires = DateTime.UtcNow.AddHours(1)
+                        });
+                        photo.FullSize.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
+                        {
+                            BucketName = _appOptions.PhotoStorageBucket,
+                            Key = $"private/uploads/{photo.PhotoId}",
+                            Expires = DateTime.UtcNow.AddHours(1)
+                        });
+                    }
+                }
             }
-
             return album;
         }
 
