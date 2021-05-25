@@ -25,8 +25,12 @@ namespace transform_metadata
         /// <returns></returns>
         public TransformedMetadata FunctionHandler(ImageMetadata extractedMetadata, ILambdaContext context)
         {
-            ExifProfile exifProfile = new ExifProfile(Convert.FromBase64String(extractedMetadata.ExifProfileBase64));
-            // test comment.
+            ExifProfile exifProfile = null;
+            if (! string.IsNullOrEmpty(extractedMetadata.ExifProfileBase64))
+            {
+                exifProfile = new ExifProfile(Convert.FromBase64String(extractedMetadata.ExifProfileBase64));
+            }
+            
             TransformedMetadata transformedMetadata = new TransformedMetadata()
             {
                 CreationTime = DateTime.Now,

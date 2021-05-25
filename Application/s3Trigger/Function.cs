@@ -1,12 +1,16 @@
-using Amazon.AppSync;
+using Amazon;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.S3Events;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using GraphQL;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.SystemTextJson;
+using Amazon.StepFunctions;
+using Amazon.StepFunctions.Model;
+using Amazon.Util;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -17,21 +21,24 @@ namespace s3Trigger
 {
     public class Function
     {
-        IAmazonAppSync appSyncClient { get; set; }
-        
-        private string GraphQLEndpoint { get; set; }
-
         private string StateMachineArn { get; set; }
 
-        private GraphQL.Client.Http.GraphQLHttpClient _graphQlClient;
+        private const string STATE_MACHINE_ARN = "STATE_MACHINE_ARN";
+        private const string PHOTO_TABLE = "PHOTO_TABLE";
+
+        private static IAmazonDynamoDB _ddbClient = new AmazonDynamoDBClient();
+        private static IAmazonStepFunctions _stepClient = new AmazonStepFunctionsClient();
+
+        DynamoDBContext _ddbContext;
 
         public Function()
         {
-            this.appSyncClient = new AmazonAppSyncClient();
-
-            //TODO: Change this to environment Variables.
-            StateMachineArn = "arn:aws:states:us-east-1:882525684088:stateMachine:PhotoProcessingWorkflow-dotnet";
-            GraphQLEndpoint = "https://v35urcizvvaapoe6uumkqjz5em.appsync-api.us-east-1.amazonaws.com/graphql";
+            StateMachineArn = Environment.GetEnvironmentVariable(STATE_MACHINE_ARN);
+            
+            AWSConfigsDynamoDB.Context
+                .AddMapping(new TypeMapping(typeof(Photo), Environment.GetEnvironmentVariable(PHOTO_TABLE)));
+            
+            _ddbContext = new DynamoDBContext(_ddbClient);
         }
 
         /// <summary>
@@ -52,105 +59,54 @@ namespace s3Trigger
 
             Console.WriteLine(objectId);
 
-            var options = await new GraphQLHttpClientOptions()
-                .ConfigureAppSync(
-                        GraphQLEndpoint,
-                        appSyncClient.Config
-                    );
-
-            _graphQlClient = new GraphQLHttpClient(options, new SystemTextJsonSerializer());
-
-            var sfnInput = new SfnExecutionInput() {
-                objectId = objectId,
+            var input = new
+            {
                 Bucket = bucket,
-                SourceKey = key
+                SourceKey = key,
+                objectId = objectId,
+                TablePhoto = Environment.GetEnvironmentVariable(PHOTO_TABLE)
             };
 
-            var startWorkflowMutation = new GraphQLRequest
+            var stepResponse = await _stepClient.StartExecutionAsync(new StartExecutionRequest
             {
-                Query = @"
-                mutation StartSfnExecution(
-                    $input: StartSfnExecutionInput!
-                ) {
-                    startSfnExecution(input: $input) {
-                        executionArn
-                        startDate
-                    }
-                }",
-                OperationName = "StartSfnExecution",
-                Variables = new
-                {
-                    input = new
-                    {
-                        input = JsonSerializer.Serialize(sfnInput),
-                        stateMachineArn = StateMachineArn
-                    },
-                }
-            };
+                StateMachineArn = StateMachineArn,
+                Name = $"{MakeSafeName(key, 80)}",
+                Input = JsonConvert.SerializeObject(input)
+            }).ConfigureAwait(false);
 
-            var workflowMutationResponse = await _graphQlClient.SendMutationAsync<StartWorkflowResult>(startWorkflowMutation);
-
-            Console.WriteLine(JsonSerializer.Serialize(workflowMutationResponse.Data.startSfnExecution));
-
-            var updatePhotoRequest = new GraphQLRequest
+            Photo photo = new Photo
             {
-                Query = @"
-                mutation UpdatePhotoMutation(
-                    $input: UpdatePhotoInput!
-                    $condition: ModelPhotoConditionInput
-                ) {
-                    updatePhoto(input: $input, condition: $condition) {
-                        id
-                        albumId
-                        owner
-                        uploadTime
-                        bucket
-                        sfnExecutionArn
-                        processingStatus
-                    }
-                }",
-                OperationName = "UpdatePhotoMutation",
-                Variables = new
-                {
-                    input = new
-                    {
-                        id = objectId,
-                        sfnExecutionArn = workflowMutationResponse.Data.startSfnExecution.executionArn,
-                        processingStatus = "RUNNING"
-                    }
-                }
+                PhotoId = objectId,
+                SfnExecutionArn = stepResponse.ExecutionArn,
+                ProcessingStatus = ProcessingStatus.Running
             };
 
-            var photoUpdateMutationResponse = await _graphQlClient.SendMutationAsync<UpdatePhotoResponse>(updatePhotoRequest);
-
-            Console.WriteLine(JsonSerializer.Serialize(photoUpdateMutationResponse.Data));
-
+            await this._ddbContext.SaveAsync(photo).ConfigureAwait(false);
         }
 
-        public class SfnExecutionInput { 
-            public string Bucket { get; set; }
-            public string SourceKey { get; set; }
-            public string objectId { get; set; }
-        }
-
-        public class StartWorkflowResult
+        public static string MakeSafeName(string displayName, int maxSize)
         {
-            public StartSfnExecution startSfnExecution { get; set; }
-        }
+            var builder = new StringBuilder();
+            foreach (char c in displayName)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    builder.Append(c);
+                }
+                else
+                {
+                    builder.Append('-');
+                }
+            }
 
-        public class StartSfnExecution
-        {
-            public string executionArn { get; set; }
-        }
+            var name = builder.ToString();
 
-        public class UpdatePhotoResponse
-        {
-            public Photo Result { get; set; }
-        }
+            if (maxSize < name.Length)
+            {
+                name = name.Substring(0, maxSize);
+            }
 
-        public class Photo
-        {
-            public string id { get; set; }
+            return name;
         }
     }
 }

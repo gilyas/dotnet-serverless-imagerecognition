@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.StepFunctions;
@@ -43,7 +44,7 @@ namespace ImageRecognition.Frontend
                     AlbumId = albumId,
                     Bucket = _appOptions.PhotoStorageBucket,
                     CreatedDate = DateTime.UtcNow,
-                    Id = photoId,
+                    PhotoId = photoId,
                     Owner = userId,
                     ProcessingStatus = ProcessingStatus.Pending,
                     
@@ -59,9 +60,10 @@ namespace ImageRecognition.Frontend
                 var putRequest = new PutObjectRequest
                 {
                     BucketName = this._appOptions.PhotoStorageBucket,
-                    Key = $"private/upload/{photoId}",
+                    Key = $"private/uploads/{photoId}",
                     FilePath = tempFile
                 };
+
                 await this._s3Client.PutObjectAsync(putRequest).ConfigureAwait(false);
 
                 return photo;
@@ -84,9 +86,9 @@ namespace ImageRecognition.Frontend
         public async Task<Album> CreateAlbum(string userId, string albumName)
         {
             var album = new Album { 
-                Id = albumName + "-" + new Guid().ToString(),
+                AlbumId = albumName + "-" + Guid.NewGuid().ToString(),
                 Name = albumName,
-                Owner = userId,
+                UserId = userId,
                 CreateDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
@@ -106,13 +108,22 @@ namespace ImageRecognition.Frontend
 
 
         // Get Album Details.
-        public async Task<IList<Photo>> GetAlbumDetails(string userId, string albumId)
+        public async Task<Album> GetAlbumDetails(string userId, string albumId)
         {
-            var search = this._ddbContext.QueryAsync<Photo>(albumId);
+            var albumQuery = 
+                this._ddbContext.QueryAsync<Album>(userId, QueryOperator.Equal, new[] { albumId });
 
-            var photos = await search.GetRemainingAsync().ConfigureAwait(false);
+            var albums = await albumQuery.GetRemainingAsync().ConfigureAwait(false);
 
-            return photos.Where(p => p.Owner == userId).ToList();
+            Album album = albums.FirstOrDefault();
+
+            if (album != null)
+            {
+                var photoQuery = this._ddbContext.QueryAsync<Photo>(albumId, new DynamoDBOperationConfig { IndexName = "albumID-uploadTime-index" });
+                album.Photos = await photoQuery.GetRemainingAsync().ConfigureAwait(false);
+            }
+
+            return album;
         }
 
 

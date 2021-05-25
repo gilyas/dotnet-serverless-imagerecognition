@@ -67,16 +67,36 @@
                     {
                         "AttributeName": "AlbumId",
                         "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "UploadTime",
+                        "AttributeType": "N"
+                    }
+                ],
+                "GlobalSecondaryIndexes": [
+                    {
+                        "IndexName" : "albumID-uploadTime-index",
+                        "KeySchema" : [ 
+                            {
+                                "AttributeName": "AlbumId",
+                                "KeyType": "HASH"
+                            },
+                            {
+                                "AttributeName": "UploadTime",
+                                "KeyType": "RANGE"
+                            }
+                        ],
+                        "Projection" : {"ProjectionType" : "ALL"},
+                        "ProvisionedThroughput" : {
+                            "ReadCapacityUnits": "30",
+                            "WriteCapacityUnits": "30"
+                        }
                     }
                 ],
                 "KeySchema": [
                     {
-                        "AttributeName": "AlbumId",
-                        "KeyType": "HASH"
-                    },
-                    {
                         "AttributeName": "PhotoId",
-                        "KeyType": "RANGE"
+                        "KeyType": "HASH"
                     }
                 ],
                 "ProvisionedThroughput": {

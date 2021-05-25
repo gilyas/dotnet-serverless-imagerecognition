@@ -4,20 +4,9 @@
     "Description": "Defines an AWS Step Functions state machine, together with the Lambda functions used as tasks when the state machine runs. See state-machine.json for the actual machine definition.",
 
     "Parameters": {
-        "PhotoRepoS3Bucket": {
-            "Type" : "String",
-            "Description": "s3 bucket for photo uploads",
-            "Default" : "photo-sharee7fa5f1b25be4c63a81417becda53512182406-devf"
-        },
-        "GraphQLFullEndPoint": {
-            "Type" : "String",
-            "Description": "graph QL endpoint",
-            "Default" : "https://v35urcizvvaapoe6uumkqjz5em.appsync-api.us-east-1.amazonaws.com/graphql"
-        },
-        "GraphQLAPIId": {
-            "Type" : "String",
-            "Description": "graph QL API ID",
-            "Default" : ""
+        "TablePhoto":{
+            "Type": "AWS::SSM::Parameter::Value<String>",
+            "Default": "/ImageRecognition/AppOptions/TablePhoto"
         },
         "Stage": {
             "Type" : "String",
@@ -37,8 +26,8 @@
                 "MemorySize": 256,
                 "Timeout": 60,
                 "Code": {
-                    "ImageUri": "./transform-metadata",
-                },
+                    "ImageUri": "./transform-metadata"
+                }
             },
             "Metadata": {
                 "Dockerfile": "Dockerfile",
@@ -78,7 +67,7 @@
                 },
                 "Environment": {
                     "Variables": {
-                        "GraphQLEndPoint": {"Ref": "GraphQLFullEndPoint"}
+                        "PHOTO_TABLE": {"Ref": "TablePhoto"}
                     }
                 }
             },
@@ -212,23 +201,10 @@
                         }
                     ]
                 },
-                "Policies": [
-                    {
-                        "PolicyName": "StepFunctionLambdaInvoke",
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "appsync:GraphQL",
-                                        "sts:*"
-                                    ],
-                                    "Resource": "*"
-                                }
-                            ]
-                        }
-                    }
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
                 ]
             }
         },

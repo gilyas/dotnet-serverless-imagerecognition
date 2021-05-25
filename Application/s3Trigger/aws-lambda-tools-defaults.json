@@ -5,12 +5,16 @@
     "dotnet lambda help",
     "All the command line options for the Lambda command can be specified in this file."
   ],
-  "profile": "default-ImageRecognition",
+  "profile": "default",
   "region": "us-east-1",
   "configuration": "Release",
   "package-type": "image",
   "function-memory-size": 256,
   "function-timeout": 30,
   "image-command": "s3Trigger::s3Trigger.Function::FunctionHandler",
-  "docker-host-build-output-dir": "./bin/Release/net5.0/linux-x64/publish"
+  "docker-host-build-output-dir": "./bin/Release/net5.0/linux-x64/publish",
+  "template": "serverless.template",
+  "stack-name": "TriggerStepFunction",
+  "s3-prefix": "image-recognition/s3Trigger",
+  "s3-bucket": "dotnet-image-recognition"
 }

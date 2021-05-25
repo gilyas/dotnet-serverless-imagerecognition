@@ -11,5 +11,7 @@ namespace Common
         public string SourceKey { get; set; }
      
         public string UserId { get; set; }
+
+        public string TablePhoto { get; set; }
     }
 }

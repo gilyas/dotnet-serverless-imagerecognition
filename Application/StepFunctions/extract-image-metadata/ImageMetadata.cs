@@ -25,7 +25,7 @@ namespace extract_image_metadata
 
         //public IReadOnlyCollection<IExifValue> ExifProfile { get; set; }
 
-        public string ExifProfileBase64 => Convert.ToBase64String(ExifProfile.ToByteArray());
+        public string ExifProfileBase64 => ExifProfile != null ? Convert.ToBase64String(ExifProfile.ToByteArray()) : string.Empty;
 
         public ExifProfile ExifProfile { get; set; }
     }
