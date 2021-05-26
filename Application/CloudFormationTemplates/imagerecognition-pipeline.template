@@ -297,7 +297,7 @@
 								],
 								"Configuration" : {
 									"ActionMode" : "CREATE_UPDATE",
-									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ImageRecognitionInfrastructure" ] ]},
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-Infrastructure" ] ]},
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
 									"TemplatePath" : "TheSource::Application/CloudFormationTemplates/imagerecognition-resources.template"
@@ -397,7 +397,7 @@
 								],
 								"Configuration" : {
 									"ActionMode" : "CREATE_UPDATE",
-									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ImageRecognitionStepFunctions" ] ]},
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-StepFunctions" ] ]},
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
 									"TemplatePath" : "ImageRecognitionStepFunctionsBundle::updated.template"
@@ -447,7 +447,7 @@
 								],
 								"Configuration" : {
 									"ActionMode" : "CREATE_UPDATE",
-									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ECSBlazerService" ] ]},
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ECSMvcService" ] ]},
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
 									"TemplatePath" : "TheSource::Application/UI/mvc-frontend/ImageRecognition/ECS-Service.template"
