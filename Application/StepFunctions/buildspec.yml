@@ -2,16 +2,16 @@ version: 0.2
 
 env:
     parameter-store:
-        S3_BUCKET: "dotnet-image-recognition"
+        S3_BUCKET: "/ImageRecognition/ArtifactStore"
 phases:
   install:
     commands:
       - dotnet tool install -g Amazon.Lambda.Tools
   build:
     commands:
-      - cd ./dotnet-lambda-refarch-imagerecognition/lambda-functions
-      - dotnet lambda package-ci --serverless-template serverless.template --output-template updated.template --s3-bucket $S3_BUCKET --s3-prefix image-recognition/lambda-functions
+      - cd ./Application/StepFunctions
+      - dotnet lambda package-ci --serverless-template serverless.template --output-template updated.template --s3-bucket $S3_BUCKET --s3-prefix StepFunctions
 artifacts:
   files:
-    - ./dotnet-lambda-refarch-imagerecognition/lambda-functions/updated.template
+    - ./Application/StepFunctions/updated.template
   discard-paths: yes

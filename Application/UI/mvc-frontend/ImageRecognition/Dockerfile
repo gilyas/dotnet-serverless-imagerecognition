@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["ImageRecognition.csproj", "."]
-RUN dotnet restore "./ImageRecognition.csproj"
+COPY ["ImageRecognition.Frontend.csproj", "."]
+RUN dotnet restore "./ImageRecognition.Frontend.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "ImageRecognition.csproj" -c Release -o /app/build
+RUN dotnet build "ImageRecognition.Frontend.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ImageRecognition.csproj" -c Release -o /app/publish
+RUN dotnet publish "ImageRecognition.Frontend.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ImageRecognition.dll"]
+ENTRYPOINT ["dotnet", "ImageRecognition.Frontend.dll"]

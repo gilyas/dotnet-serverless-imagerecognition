@@ -14,6 +14,9 @@
     <CloudFormationPath Condition=" '$(CloudFormationPath)' == '' AND Exists('$(MSBuildExtensionsPath)\Amazon Web Services LLC\AWSToolkit.VS2010\cloudformation.targets')">$(MSBuildExtensionsPath)\Amazon Web Services LLC\AWSToolkit.VS2010</CloudFormationPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="imagerecognition-pipeline.template">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="imagerecognition-resources.template">
       <SubType>Code</SubType>
     </Compile>

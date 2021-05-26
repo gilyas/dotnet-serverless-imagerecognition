@@ -368,24 +368,6 @@
             }
         },
 
-        "FrontendCluster": {
-            "Type": "AWS::ECS::Cluster",
-            "Description": "",
-            "Properties": {
-                "ClusterName": {
-                    "Fn::Join": [
-                        "-",
-                        [
-                            {
-                                "Ref": "AWS::StackName"
-                            },
-                            "Frontend"
-                        ]
-                    ]
-                }
-            }
-        },
-
         "LoadBalancer": {
             "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "Description": "",
@@ -528,18 +510,6 @@
                     "Ref": "SubnetC"
                 },
                 "Name": "/ImageRecognition/SubnetC"
-            }
-        },
-
-        "ParameterFrontendCluster": {
-            "Type": "AWS::SSM::Parameter",
-            "Description": "Stores the ID of the cluster defined for our Fargate instances into Parameter Store.",
-            "Properties": {
-                "Type": "String",
-                "Value": {
-                    "Ref": "FrontendCluster"
-                },
-                "Name": "/ImageRecognition/FrontendCluster"
             }
         },
 

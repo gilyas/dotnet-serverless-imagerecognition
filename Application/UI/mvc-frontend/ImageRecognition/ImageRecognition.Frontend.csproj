@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>aspnet-ImageRecognition-6463645F-EBEE-4DF6-958E-2D636466E839</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
+    <DockerfileContext>..\..\..</DockerfileContext>
     <AssemblyName>ImageRecognition.Frontend</AssemblyName>
     <RootNamespace>ImageRecognition.Frontend</RootNamespace>
   </PropertyGroup>
