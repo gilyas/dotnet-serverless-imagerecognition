@@ -28,7 +28,7 @@
                 "MemorySize": 256,
                 "Timeout": 60,
                 "Code": {
-                    "ImageUri": "."
+                    "ImageUri": "./src"
                 }
             },
             "Metadata": {
