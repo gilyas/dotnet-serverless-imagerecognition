@@ -2,7 +2,7 @@ version: 0.2
 
 env:
     parameter-store:
-        S3_BUCKET: "/ImageRecognition/ArtifactStore"
+        S3_BUCKET: "/ImageRecognition/ImageRecognitionArtifactStore"
 phases:
   install:
     commands:
@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - cd ./Application/StepFunctions
-      - dotnet lambda package-ci --msbuild-parameters "--no-restore" --serverless-template serverless.template --output-template updated.template --s3-bucket $S3_BUCKET --s3-prefix StepFunctions
+      - dotnet lambda package-ci --serverless-template serverless.template --output-template updated.template --s3-bucket $S3_BUCKET --s3-prefix StepFunctions
 artifacts:
   files:
     - ./Application/StepFunctions/updated.template
