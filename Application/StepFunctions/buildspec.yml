@@ -7,7 +7,7 @@ phases:
   install:
     commands:
       - dotnet tool install -g Amazon.Lambda.Tools
-      - ENV PATH="${PATH}:/root/.dotnet/tools"
+      - export PATH="$PATH:/root/.dotnet/tools"
   build:
     commands:
       - cd ./Application/StepFunctions
