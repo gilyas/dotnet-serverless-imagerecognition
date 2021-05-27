@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Amazon.Lambda.Core;
 using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
-using Amazon.S3;
 using Common;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -28,15 +28,12 @@ namespace rekognition
 
         public const int MaxLabels = 10;
 
-        IAmazonS3 S3Client { get; }
-
         IAmazonRekognition RekognitionClient { get; }
 
         float MinConfidence { get; set; } = DEFAULT_MIN_CONFIDENCE;
 
         public Function()
         {
-            this.S3Client = new AmazonS3Client();
             this.RekognitionClient = new AmazonRekognitionClient();
 
             var environmentMinConfidence = System.Environment.GetEnvironmentVariable(MIN_CONFIDENCE_ENVIRONMENT_VARIABLE_NAME);
@@ -69,7 +66,7 @@ namespace rekognition
         {
             Console.WriteLine($"Looking for labels in image {input.Bucket}:{input.SourceKey}");
 
-            string key = System.Web.HttpUtility.UrlDecode(input.SourceKey);
+            string key = WebUtility.UrlDecode(input.SourceKey);
 
             var detectResponses = await this.RekognitionClient.DetectLabelsAsync(new DetectLabelsRequest
             {
@@ -80,7 +77,7 @@ namespace rekognition
                     S3Object = new Amazon.Rekognition.Model.S3Object
                     {
                         Bucket = input.Bucket,
-                        Name = input.SourceKey
+                        Name = key
                     }
                 }
             });

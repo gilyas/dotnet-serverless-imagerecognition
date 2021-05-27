@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon;
@@ -41,11 +42,11 @@ namespace store_image_metadata
 
             var photoUpdate = new Photo
             {
-                PhotoId = input.ObjectId,
+                PhotoId = WebUtility.UrlDecode(input.ObjectId),
                 ProcessingStatus = ProcessingStatus.Succeeded,
                 FullSize = new PhotoImage
                 {
-                    Key = input.SourceKey,
+                    Key = WebUtility.UrlDecode(input.SourceKey),
                     Width = input.ExtractedMetadata?.Dimensions?.Width,
                     Height = input.ExtractedMetadata?.Dimensions?.Height,
                 },
@@ -54,7 +55,7 @@ namespace store_image_metadata
                 ExifModel = input.ExtractedMetadata?.ExifModel,
                 Thumbnail = new PhotoImage
                 {
-                    Key = thumbnail?.s3key,
+                    Key = WebUtility.UrlDecode(thumbnail?.s3key),
                     Width = thumbnail?.width,
                     Height = thumbnail?.height,
                 },

@@ -9,6 +9,7 @@ using Amazon.StepFunctions.Model;
 using Amazon.Util;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -50,7 +51,7 @@ namespace s3Trigger
         public async Task FunctionHandler(S3Event evnt, ILambdaContext context)
         {
             string bucket = evnt.Records[0].S3.Bucket.Name;
-            string key = evnt.Records[0].S3.Object.Key;
+            string key = WebUtility.UrlDecode(evnt.Records[0].S3.Object.Key);
 
             Console.WriteLine(bucket);
             Console.WriteLine(key);

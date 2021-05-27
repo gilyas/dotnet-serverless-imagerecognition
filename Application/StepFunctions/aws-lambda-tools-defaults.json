@@ -7,8 +7,8 @@
   
       "All the command line options for the Lambda command can be specified in this file."
     ],
-    "profile": "default-ImageRecognition",
-    "region": "us-east-1",
+    "profile": "",
+    "region": "",
     "package-type": "image",
     "configuration": "Release",
     "template": "serverless.template",

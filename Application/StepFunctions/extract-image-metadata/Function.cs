@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,11 +34,12 @@ namespace extract_image_metadata
         /// <returns></returns>
         public async Task<ImageMetadata> FunctionHandler(ExecutionInput state, ILambdaContext context)
         {
-            var tmpPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(state.SourceKey));
+            string srcKey = WebUtility.UrlDecode(state.SourceKey);
+            var tmpPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(srcKey));
             try
             {
                 ImageMetadata metadata = new ImageMetadata(); 
-                using (var response = await S3Client.GetObjectAsync(state.Bucket, state.SourceKey))
+                using (var response = await S3Client.GetObjectAsync(state.Bucket, srcKey))
                 {
                     IImageFormat format;
                     

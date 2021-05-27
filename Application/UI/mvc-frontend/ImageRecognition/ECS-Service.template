@@ -149,7 +149,7 @@
                     "EC2"
                 ],
                 "Cpu": "2048",
-                "Memory": "4GB",
+                "Memory": "16GB",
                 "NetworkMode": "awsvpc",
                 "ExecutionRoleArn": {
                     "Ref": "FrontendExecutionRole"

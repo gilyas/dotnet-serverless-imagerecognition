@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Amazon.Lambda.Core;
@@ -80,6 +81,7 @@ namespace thumbnail
 
         private async Task<ThumbnailImage> GenerateThumbnail(string s3Bucket, string srcKey, int width, int height)
         {
+            srcKey = WebUtility.UrlDecode(srcKey.Replace("+", " "));
             using (var response = await S3Client.GetObjectAsync(s3Bucket, srcKey))
             {
                 var image = Image.Load(response.ResponseStream, out IImageFormat format);
