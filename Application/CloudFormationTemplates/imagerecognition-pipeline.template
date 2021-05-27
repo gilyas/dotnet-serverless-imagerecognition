@@ -181,7 +181,7 @@
                 "Environment" : {
 					"ComputeType" : "BUILD_GENERAL1_SMALL",
                     "Type" : "LINUX_CONTAINER",
-                    "Image" : "mcr.microsoft.com/dotnet/sdk:5.0",
+                    "Image" : "aws/codebuild/standard:5.0",
                     "PrivilegedMode" : true
 				},
 		        "Source"      : {
@@ -202,7 +202,7 @@
                 "Environment" : {
 					"ComputeType" : "BUILD_GENERAL1_SMALL",
                     "Type" : "LINUX_CONTAINER",
-                    "Image" : "mcr.microsoft.com/dotnet/sdk:5.0",
+                    "Image" : "aws/codebuild/standard:5.0",
                     "PrivilegedMode" : true
 				},
 		        "Source"      : {
@@ -223,7 +223,7 @@
                 "Environment" : {
 					"ComputeType" : "BUILD_GENERAL1_MEDIUM",
                     "Type" : "LINUX_CONTAINER",
-                    "Image" : "aws/codebuild/dot-net:core-2.1",                    
+                    "Image" : "aws/codebuild/standard:5.0",                    
                     "PrivilegedMode" : true
 				},
 		        "Source"      : {
