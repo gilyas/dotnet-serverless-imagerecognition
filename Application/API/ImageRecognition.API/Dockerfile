@@ -2,14 +2,14 @@ FROM public.ecr.aws/lambda/dotnet:5.0 AS base
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
 WORKDIR /src
-COPY ["s3Trigger.csproj", "."]
-RUN dotnet restore "./s3Trigger.csproj"
+COPY ["ImageRecognition.API.csproj", "."]
+RUN dotnet restore "./ImageRecognition.API.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "s3Trigger.csproj" --configuration Release --output /app/build
+RUN dotnet build "ImageRecognition.API.csproj" --configuration Release --output /app/build
 
 FROM build AS publish
-RUN dotnet publish "s3Trigger.csproj" \
+RUN dotnet publish "ImageRecognition.API.csproj" \
             --configuration Release \ 
             --runtime linux-x64 \
             --self-contained false \ 

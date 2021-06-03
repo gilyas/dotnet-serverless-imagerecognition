@@ -54,16 +54,23 @@
         "AspNetCoreFunction": {
           "Type": "AWS::Serverless::Function",
           "Properties": {
-            "Handler": "ImageRecognition.API::ImageRecognition.API.LambdaEntryPoint::FunctionHandlerAsync",
-            "PackageType": "Image",
-            "CodeUri": "",
-            "MemorySize": 1024,
-            "Timeout": 30,
-            "Role": {
+                "PackageType": "Image",
+                "Role": {
                     "Fn::GetAtt": [
                         "LambdaRole",
                         "Arn"
                     ]
+                },
+                "ImageConfig": { "Command": [ "ImageRecognition.API::ImageRecognition.API.LambdaEntryPoint::FunctionHandlerAsync" ]},
+                "MemorySize": 1024,
+                "Timeout": 30,
+                "Code": {
+                    "ImageUri": "."
+                },
+                "Metadata": {
+                    "Dockerfile": "Dockerfile",
+                    "DockerContext": ".",
+                    "DockerTag": ""
                 }
             }
         },
