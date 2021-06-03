@@ -39,7 +39,7 @@
                     ]
                 },
                 "ManagedPolicyArns": [
-				    "arn:aws:iam::aws:policy/AWSLambdaFullAccess",
+				    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
 				    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
 				    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
 				    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
@@ -137,7 +137,7 @@
             }
         },
 
-        "ParameterCloudMosaicApiUrl": {
+        "ParameterImageRecognitionApiUrl": {
             "Type": "AWS::SSM::Parameter",
             "Description": "",
             "Properties": {
