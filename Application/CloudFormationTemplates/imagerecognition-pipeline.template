@@ -466,7 +466,7 @@
 								],
 								"Configuration" : {
 									"ActionMode" : "CREATE_UPDATE",
-									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ImageRecognitionAPI" ] ]},
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-API" ] ]},
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
 									"TemplatePath" : "ImageRecognitionAPIBundle::updated.template"
