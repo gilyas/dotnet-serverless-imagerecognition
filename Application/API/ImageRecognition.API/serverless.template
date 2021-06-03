@@ -1,0 +1,95 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application that uses the ASP.NET Core framework running in Amazon Lambda.",
+  
+  "Parameters" : {
+		"ApplicationLoadBalancerHost" : {
+		    "Type" : "AWS::SSM::Parameter::Value<String>",
+            "Default" : "/ImageRecognition/LoadBalancerHost"
+		},
+		"ApplicationLoadBalancerListener" : {
+		    "Type" : "AWS::SSM::Parameter::Value<String>",
+            "Default" : "/ImageRecognition/LoadBalancerListener"
+		}
+
+	},
+
+  "Conditions": {},
+  "Resources": {
+
+      "LambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Description" : "",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+				    "arn:aws:iam::aws:policy/AWSLambdaFullAccess",
+				    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+				    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+				    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+				    "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
+                ],
+                "Policies" : [
+					
+			    ]
+            }
+        },
+        
+        "AspNetCoreFunction": {
+          "Type": "AWS::Serverless::Function",
+          "Properties": {
+            "Handler": "ImageRecognition.API::ImageRecognition.API.LambdaEntryPoint::FunctionHandlerAsync",
+            "PackageType": "Image",
+            "CodeUri": "",
+            "MemorySize": 1024,
+            "Timeout": 30,
+            "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaRole",
+                        "Arn"
+                    ]
+                },
+            "Events": {
+              "ProxyResource": {
+                "Type": "Api",
+                "Properties": {
+                  "Path": "/{proxy+}",
+                  "Method": "ANY"
+                }
+              },
+              "RootResource": {
+                "Type": "Api",
+                "Properties": {
+                  "Path": "/",
+                  "Method": "ANY"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Outputs": {
+        "ApiURL": {
+          "Description": "API endpoint URL for Prod environment",
+          "Value": {
+            "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+          }
+        }
+      }
+}
