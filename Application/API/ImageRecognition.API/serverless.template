@@ -52,7 +52,7 @@
         },
         
         "AspNetCoreFunction": {
-          "Type": "AWS::Serverless::Function",
+          "Type": "AWS::Lambda::Function",
           "Properties": {
                 "PackageType": "Image",
                 "Role": {
@@ -66,12 +66,12 @@
                 "Timeout": 30,
                 "Code": {
                     "ImageUri": "."
-                },
-                "Metadata": {
-                    "Dockerfile": "Dockerfile",
-                    "DockerContext": ".",
-                    "DockerTag": ""
                 }
+            },
+            "Metadata": {
+                "Dockerfile": "Dockerfile",
+                "DockerContext": ".",
+                "DockerTag": ""
             }
         },
         "ALBLambdaPermission" : {
