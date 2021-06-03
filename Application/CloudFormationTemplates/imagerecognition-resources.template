@@ -2,7 +2,41 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Stands up resources needed to support the ImageRecognition demo application.",
 
-    "Parameters": {},
+    "Parameters": {
+        "DnsName" : {
+		    "Type" : "String",
+            "Default" : "",
+            "MinLength" : "0",
+            "Description" : "Optional DNS Host name that is assigned to the load balancer."
+		},
+
+		"LoadbalancerCertificateArn" : {
+		    "Type" : "String",
+            "Default" : "",
+            "MinLength" : "0",
+            "Description" : "Optional certificate arn from ACM. If set an HTTPS listner will be configured."
+		}
+    },
+
+    "Conditions" : {
+		"UseHttps" : {
+		   "Fn::Not" : [{
+			  "Fn::Equals" : [
+				 {"Ref" : "LoadbalancerCertificateArn"},
+				 ""
+			  ]
+		   }]
+		},
+
+		"HasDnsName" : {
+		   "Fn::Not" : [{
+			  "Fn::Equals" : [
+				 {"Ref" : "DnsName"},
+				 ""
+			  ]
+		   }]
+		}
+	},
 
     "Resources": {
 
@@ -414,6 +448,29 @@
             }
         },
 
+        "HttpsListener" : {
+            "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+            "Condition" : "UseHttps",
+            "Properties" : {
+                "DefaultActions": [
+                    {
+                        "TargetGroupArn": {
+                            "Ref": "DefaultTargetGroup"
+                        },
+                        "Type": "forward"
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "LoadBalancer"
+                },
+                "Port"            : "443",
+                "Protocol"        : "HTTPS",
+                "Certificates" : [
+					{"CertificateArn" : { "Ref" : "LoadbalancerCertificateArn" }}
+				]
+            }
+        },
+
         "DefaultTargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Description": "",
@@ -474,6 +531,38 @@
                     "Ref": "ECSSecurityGroup"
                 },
                 "Name": "/ImageRecognition/ECSSecurityGroup"
+            }
+        },
+
+        "ParameterVpc": {
+            "Type": "AWS::SSM::Parameter",
+            "Description": "Stores the ID of the VPC into Parameter Store.",
+            "Properties": {
+                "Type": "String",
+                "Value": {
+                    "Ref": "ImageRecognitionVpc"
+                },
+                "Name": "/ImageRecognition/Vpc"
+            }
+        },
+
+        "ParameterLoadBalancerHost": {
+            "Type": "AWS::SSM::Parameter",
+            "Description": "The host of the load balancer.",
+            "Properties": {
+                "Type": "String",
+                "Name": "/ImageRecognition/LoadBalancerHost",
+                "Value" : { "Fn::If" : ["HasDnsName", {"Fn::Join" : [ "", ["https://", {"Ref" : "DnsName" }, "/"]]}, {"Fn::Join" : [ "", ["http://", {"Fn::GetAtt" : [ "LoadBalancer", "DNSName"]}, "/" ] ]}] }
+            }
+        },
+
+        "ParameterLoadBalancerListener": {
+            "Type": "AWS::SSM::Parameter",
+            "Description": "Stores the ID of the VPC into Parameter Store.",
+            "Properties": {
+                "Type": "String",
+                "Name": "/ImageRecognition/LoadBalancerListener",
+                "Value" : { "Fn::If" : ["UseHttps", {"Ref": "HttpsListener"}, {"Ref": "HttpListener"}] }
             }
         },
 
