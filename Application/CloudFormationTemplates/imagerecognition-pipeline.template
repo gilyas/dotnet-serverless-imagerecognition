@@ -212,6 +212,27 @@
 		    }
 		},
 
+		"ImageRecognitionAPIBuild" : {
+		    "Type" : "AWS::CodeBuild::Project",
+		    "Properties" : {
+		        "Artifacts" : {
+					"Type" : "CODEPIPELINE"
+		        },
+		        "Name"      : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-API" ] ]},
+		        "ServiceRole" : { "Ref" : "CodeBuildRole" },
+                "Environment" : {
+					"ComputeType" : "BUILD_GENERAL1_MEDIUM",
+                    "Type" : "LINUX_CONTAINER",
+                    "Image" : "aws/codebuild/standard:5.0",                    
+                    "PrivilegedMode" : true
+				},
+		        "Source"      : {
+		            "BuildSpec" : "Application/API/ImageRecognition.API/buildspec.yml",
+		            "Type"      : "CODEPIPELINE"
+		        }
+		    }
+		},
+
 		"ImageRecognitionMvcFrontendBuild" : {
 		    "Type" : "AWS::CodeBuild::Project",
 		    "Properties" : {
@@ -401,6 +422,56 @@
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
 									"TemplatePath" : "ImageRecognitionStepFunctionsBundle::updated.template"
+								},
+                                "RunOrder" : 2
+							}
+						]
+					},
+					{
+						"Name" : "ImageRecognition-API",
+                        "Actions" : [
+							{
+								"Name" : "Build-API",
+								"ActionTypeId" : {
+									"Category" : "Build",
+                                    "Provider" : "CodeBuild",
+                                    "Owner" : "AWS",
+                                    "Version" : "1"
+								},
+                                "InputArtifacts" : [
+									{
+										"Name" : "TheSource"
+									}
+								],
+                                "OutputArtifacts" : [
+									{
+										"Name" : "ImageRecognitionAPIBundle"
+									}
+								],
+								"Configuration" : {
+									"ProjectName" : { "Ref" : "ImageRecognitionAPIBuild" }
+								},
+                                "RunOrder" : 1
+							},
+							{
+								"Name" : "CF-ImageRecognitionAPI",
+								"ActionTypeId" : {
+									"Category" : "Deploy",
+                                    "Provider" : "CloudFormation",
+                                    "Owner" : "AWS",
+                                    "Version" : "1"
+								},
+                                "InputArtifacts" : [
+									{
+										"Name" : "ImageRecognitionAPIBundle"
+									}
+								],
+								"Configuration" : {
+									"ActionMode" : "CREATE_UPDATE",
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ImageRecognitionAPI" ] ]},
+									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
+									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
+									"TemplatePath" : "ImageRecognitionAPIBundle::updated.template"
 								},
                                 "RunOrder" : 2
 							}
