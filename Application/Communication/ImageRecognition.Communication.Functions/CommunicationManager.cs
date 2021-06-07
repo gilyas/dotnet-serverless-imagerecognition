@@ -16,7 +16,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace ImageRecognition.Communication.Manager
+namespace ImageRecognition.Communication.Functions
 {
     public class CommunicationManager
     {

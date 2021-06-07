@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
-using ImageRecognition.Communication.Manager;
 
 namespace Common
 {

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Common;
-using ImageRecognition.Communication.Manager;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 

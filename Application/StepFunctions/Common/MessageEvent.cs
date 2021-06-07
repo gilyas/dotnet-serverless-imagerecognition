@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ImageRecognition.Communication.Manager
+namespace Common
 {
     public class MessageEvent
     {
