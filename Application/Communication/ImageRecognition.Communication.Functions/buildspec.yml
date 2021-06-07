@@ -2,7 +2,7 @@ version: 0.2
 
 env:
     parameter-store:
-        S3_BUCKET: "/ImageRecognition/AppOptions/ImageRecognitionArtifactStore"
+        S3_BUCKET: "/ImageRecognition/ImageRecognitionArtifactStore"
 phases:
   install:
     commands:

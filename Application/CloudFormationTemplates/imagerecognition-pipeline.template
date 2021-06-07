@@ -209,6 +209,7 @@
 		        }
 		    }
 		},
+		
 		"PhotoCommunicationsBuild" : {
 		    "Type" : "AWS::CodeBuild::Project",
 		    "Properties" : {
@@ -229,6 +230,7 @@
 		        }
 		    }
 		},
+		
 		"ImageRecognitionAPIBuild" : {
 		    "Type" : "AWS::CodeBuild::Project",
 		    "Properties" : {
