@@ -41,11 +41,15 @@
                 "ImageUri": ".",
                 "Events":{
                     "CreatePhotoEvent":{
-                    "Type": "S3",
-                    "Properties": { 
-                        "Bucket": {"Ref": "PhotoStorageBucket"},
-                        "Events": "s3:ObjectCreated:Put",
-                        "Filter" : {"S3Key" : "/private/uploads"}
+                        "Type": "S3",
+                        "Properties": { 
+                            "Bucket": {"Ref": "PhotoStorageBucket"},
+                            "Events": "s3:ObjectCreated:*",
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [{  "Name" : "prefix",  "Value" : "private/uploads"}]
+                                }
+                            }
                         }
                     }
                 }
