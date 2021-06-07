@@ -12,6 +12,6 @@ namespace Common
      
         public string UserId { get; set; }
 
-        public string TablePhoto { get; set; }
+        public string PhotoId { get; set; }
     }
 }

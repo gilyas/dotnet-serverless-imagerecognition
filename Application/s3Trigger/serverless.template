@@ -7,13 +7,21 @@
         "TablePhoto":{
             "Type": "AWS::SSM::Parameter::Value<String>",
             "Default": "/ImageRecognition/AppOptions/TablePhoto"
+        },
+        "StateMachineArn":{
+            "Type": "AWS::SSM::Parameter::Value<String>",
+            "Default": "/ImageRecognition/AppOptions/StateMachineArn"
+        },
+        "S3StorageBucket":{
+            "Type": "AWS::SSM::Parameter::Value<String>",
+            "Default": "/ImageRecognition/AppOptions/PhotoStorageBucket"
         }
     },
 
     "Resources": {
         
         "S3Trigger": {
-            "Type": "AWS::Lambda::Function",
+            "Type": "AWS::Serverless::Function",
             "Description" : "massages JSON of extracted image metadata",
             "Properties": {
                 "PackageType": "Image",
@@ -21,14 +29,22 @@
                 "Environment": {
                     "Variables": {
                         "PHOTO_TABLE": {"Ref": "TablePhoto"},
-                        "STATE_MACHINE_ARN": "FILL_WITH_YOUR_VALUE"
+                        "STATE_MACHINE_ARN": {"Ref": "StateMachineArn"}
                     }
                 },
                 "ImageConfig": { "Command": [ "s3Trigger::s3Trigger.Function::FunctionHandler" ]},
                 "MemorySize": 256,
                 "Timeout": 60,
-                "Code": {
-                    "ImageUri": "."
+                "ImageUri": ".",
+                "Events":{
+                    "CreatePhotoEvent":{
+                    "Type": "S3",
+                    "Properties": { 
+                        "Bucket": {"Ref": "S3StorageBucket"},
+                        "Events": "s3:ObjectCreated:Put",
+                        "Filter" : {"S3Key" : "/private/uploads"}
+                        }
+                    }
                 }
             },
             "Metadata": {

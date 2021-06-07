@@ -8,6 +8,7 @@ using Amazon.Lambda.Core;
 using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
 using Common;
+using ImageRecognition.Communication.Manager;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -64,6 +65,8 @@ namespace rekognition
         /// <returns></returns>
         public async Task<List<Label>> FunctionHandler(ExecutionInput input, ILambdaContext context)
         {
+            var logger = new ImageRecognitionLogger(input, context);
+
             Console.WriteLine($"Looking for labels in image {input.Bucket}:{input.SourceKey}");
 
             string key = WebUtility.UrlDecode(input.SourceKey);
@@ -81,6 +84,8 @@ namespace rekognition
                     }
                 }
             });
+
+            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo labels extracted succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
 
             return detectResponses.Labels;
         }

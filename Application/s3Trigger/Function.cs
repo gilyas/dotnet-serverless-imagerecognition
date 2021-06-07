@@ -64,7 +64,7 @@ namespace s3Trigger
             {
                 Bucket = bucket,
                 SourceKey = key,
-                objectId = objectId,
+                PhotoId = objectId,
                 TablePhoto = Environment.GetEnvironmentVariable(PHOTO_TABLE)
             };
 

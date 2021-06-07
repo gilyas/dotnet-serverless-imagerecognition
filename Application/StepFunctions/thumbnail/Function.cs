@@ -9,6 +9,7 @@ using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Common;
+using ImageRecognition.Communication.Manager;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
@@ -38,6 +39,8 @@ namespace thumbnail
         /// <returns></returns>
         public async Task<ThumbnailInfo> FunctionHandler(Input input, ILambdaContext context)
         {
+            var logger = new ImageRecognitionLogger(input, context);
+
             Dimensions size = input.ExtractedMetadata.Dimensions;
 
             decimal scalingFactor = Math.Min(
@@ -68,6 +71,8 @@ namespace thumbnail
                     Key = destinationKey,
                     InputStream = stream
                 });
+
+                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo thumbnail created", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
 
                 return new ThumbnailInfo(width, height, destinationKey, input.Bucket);
             }

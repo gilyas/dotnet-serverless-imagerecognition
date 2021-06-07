@@ -9,6 +9,8 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
 using Amazon.Util;
+using Common;
+using ImageRecognition.Communication.Manager;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -36,6 +38,8 @@ namespace store_image_metadata
         /// <returns></returns>
         public async Task FunctionHandler(InputEvent input, ILambdaContext context)
         {
+            var logger = new ImageRecognitionLogger(input, context);
+            
             var thumbnail = JsonSerializer.Deserialize<Thumbnail>(JsonSerializer.Serialize(input.ParallelResults[1]));
 
             List<Label> labels = JsonSerializer.Deserialize<List<Label>>(JsonSerializer.Serialize(input.ParallelResults[0]));
@@ -66,6 +70,8 @@ namespace store_image_metadata
 
             // update photo table.
             await this._ddbContext.SaveAsync(photoUpdate).ConfigureAwait(false);
+
+            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo recognition completed succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
 
             Console.WriteLine(JsonSerializer.Serialize(photoUpdate));
         }

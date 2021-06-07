@@ -151,6 +151,55 @@
             }
         },
 
+        "TableCommunicationConnection": {
+            "Type": "AWS::DynamoDB::Table",
+            "Description": "",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "connectionId",
+                        "AttributeType": "S"
+                    },
+					{
+						"AttributeName" : "username",
+                        "AttributeType" : "S"
+					}
+                ],
+                "KeySchema": [
+					{
+						"AttributeName": "connectionId",
+						"KeyType": "HASH"
+					}
+                ],
+                "GlobalSecondaryIndexes" : [
+					{
+						"IndexName" : "username",
+                        "KeySchema" : [
+							{
+								"AttributeName" : "username",
+                                "KeyType" : "HASH"
+							}
+						],
+                        "Projection" : {
+							"ProjectionType" : "ALL"
+						}
+					}
+				],
+                "BillingMode" : "PAY_PER_REQUEST",
+                "TableName": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "CommunicationConnections"
+                        ]
+                    ]
+                }
+            }
+        },
+
         "FrontendRepository": {
             "Type": "AWS::ECR::Repository",
             "Description": "Repository holding the deployed web application images.",
@@ -519,6 +568,18 @@
                     "Ref": "TablePhoto"
                 },
                 "Name": "/ImageRecognition/AppOptions/TablePhoto"
+            }
+        },
+
+        "ParameterTableCommunicationConnections": {
+            "Type": "AWS::SSM::Parameter",
+            "Description": "Stores the connection ids for the websocket connections made in the client.",
+            "Properties": {
+                "Type": "String",
+                "Value": {
+                    "Ref": "TableCommunicationConnection"
+                },
+                "Name": "/ImageRecognition/AppOptions/TableCommunicationConnection"
             }
         },
 
