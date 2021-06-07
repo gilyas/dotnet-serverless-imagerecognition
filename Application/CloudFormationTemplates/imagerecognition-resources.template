@@ -40,13 +40,6 @@
 
     "Resources": {
 
-        "PhotoStorageBucket": {
-            "Type": "AWS::S3::Bucket",
-            "Description": "",
-            "DeletionPolicy": "Retain",
-            "Properties": {}
-        },
-
         "TableAlbum": {
             "Type": "AWS::DynamoDB::Table",
             "Description": "",
@@ -532,18 +525,6 @@
                     "Ref": "ImageRecognitionVpc"
                 },
                 "TargetType": "ip"
-            }
-        },
-
-        "ParameterPhotoStorageBucket": {
-            "Type": "AWS::SSM::Parameter",
-            "Description": "Stores the name of the S3 storage bucket to Parameter Store.",
-            "Properties": {
-                "Type": "String",
-                "Value": {
-                    "Ref": "PhotoStorageBucket"
-                },
-                "Name": "/ImageRecognition/AppOptions/PhotoStorageBucket"
             }
         },
 

@@ -11,15 +11,18 @@
         "StateMachineArn":{
             "Type": "AWS::SSM::Parameter::Value<String>",
             "Default": "/ImageRecognition/AppOptions/StateMachineArn"
-        },
-        "S3StorageBucket":{
-            "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/ImageRecognition/AppOptions/PhotoStorageBucket"
         }
     },
 
     "Resources": {
         
+        "PhotoStorageBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Description": "",
+            "DeletionPolicy": "Retain",
+            "Properties": {}
+        },
+
         "S3Trigger": {
             "Type": "AWS::Serverless::Function",
             "Description" : "massages JSON of extracted image metadata",
@@ -40,7 +43,7 @@
                     "CreatePhotoEvent":{
                     "Type": "S3",
                     "Properties": { 
-                        "Bucket": {"Ref": "S3StorageBucket"},
+                        "Bucket": {"Ref": "PhotoStorageBucket"},
                         "Events": "s3:ObjectCreated:Put",
                         "Filter" : {"S3Key" : "/private/uploads"}
                         }
@@ -80,6 +83,18 @@
                     "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess",
                     "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
                 ]
+            }
+        },
+
+         "ParameterPhotoStorageBucket": {
+            "Type": "AWS::SSM::Parameter",
+            "Description": "Stores the name of the S3 storage bucket to Parameter Store.",
+            "Properties": {
+                "Type": "String",
+                "Value": {
+                    "Ref": "PhotoStorageBucket"
+                },
+                "Name": "/ImageRecognition/AppOptions/PhotoStorageBucket"
             }
         }
     }
