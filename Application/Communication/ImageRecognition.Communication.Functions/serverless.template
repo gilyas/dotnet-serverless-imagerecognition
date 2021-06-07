@@ -81,14 +81,14 @@
 		"OnConnectFunction" : {
 			"Type" : "AWS::Serverless::Function",
 			"Properties": {
-				"Handler": "ImageRecognition.Communication.Functions::ImageRecognition.Communication.Functions.Functions::OnConnect",
-				"Runtime": "dotnetcore2.1",
+                "PackageType": "Image",
+				"ImageConfig": { "Command": [ "ImageRecognition.Communication.Functions::ImageRecognition.Communication.Functions.Functions::OnConnect"]},
 				"MemorySize": 512,
 				"Timeout": 30,
-                "CodeUri" : "",
+                "ImageUri": ".",
 				"Role": null,
                 "Policies" : [
-					"arn:aws:iam::aws:policy/AWSLambdaFullAccess",
+					"arn:aws:iam::aws:policy/AWSLambda_FullAccess",
 					"arn:aws:iam::aws:policy/AmazonSSMFullAccess"
 				],
                 "Environment" : {
@@ -97,26 +97,36 @@
 						"LAMBDA_NET_SERIALIZER_DEBUG" : "false"
 					}					
 				}
-			}
+			},
+            "Metadata": {
+                "Dockerfile": "Dockerfile",
+                "DockerContext": ".",
+                "DockerTag": ""
+            }
 		},
 
 		"OnDisconnectFunction" : {
 			"Type" : "AWS::Serverless::Function",
 			"Properties": {
-				"Handler": "ImageRecognition.Communication.Functions::ImageRecognition.Communication.Functions.Functions::OnDisconnect",
-				"Runtime": "dotnetcore2.1",
+                "PackageType": "Image",
+				"ImageConfig": { "Command": [ "ImageRecognition.Communication.Functions::ImageRecognition.Communication.Functions.Functions::OnDisconnect"]},
 				"MemorySize": 128,
 				"Timeout": 30,
-                "CodeUri" : "",
+                "ImageUri": ".",
 				"Role": null,
-                "Policies" : ["arn:aws:iam::aws:policy/AWSLambdaFullAccess"],
+                "Policies" : ["arn:aws:iam::aws:policy/AWSLambda_FullAccess"],
                 "Environment" : {
 					"Variables" : {
 						"COMMUNICATION_TABLE" : { "Ref" : "ConnectionsTable" },
 						"LAMBDA_NET_SERIALIZER_DEBUG" : "false"
 					}					
 				}
-			}
+			},
+            "Metadata": {
+                "Dockerfile": "Dockerfile",
+                "DockerContext": ".",
+                "DockerTag": ""
+            }
 		},
 
         "ConnectPermission" : {
