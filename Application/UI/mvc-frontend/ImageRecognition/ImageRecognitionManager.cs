@@ -61,7 +61,7 @@ namespace ImageRecognition.Frontend
                 var putRequest = new PutObjectRequest
                 {
                     BucketName = this._appOptions.PhotoStorageBucket,
-                    Key = $"private/uploads/{photoId}",
+                    Key = $"private/uploads/{userId}/{photoId}",
                     FilePath = tempFile
                 };
 
@@ -129,13 +129,13 @@ namespace ImageRecognition.Frontend
                         photo.Thumbnail.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
                         {
                             BucketName = _appOptions.PhotoStorageBucket,
-                            Key = $"private/resized/{photo.PhotoId}",
+                            Key = $"private/resized/{userId}/{photo.PhotoId}",
                             Expires = DateTime.UtcNow.AddHours(1)
                         });
                         photo.FullSize.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
                         {
                             BucketName = _appOptions.PhotoStorageBucket,
-                            Key = $"private/uploads/{photo.PhotoId}",
+                            Key = $"private/uploads/{userId}/{photo.PhotoId}",
                             Expires = DateTime.UtcNow.AddHours(1)
                         });
                     }
