@@ -56,6 +56,7 @@ namespace s3Trigger
             Console.WriteLine(bucket);
             Console.WriteLine(key);
 
+            string orignalUser = key.Substring(key.IndexOf("/uploads/") + 9, key.IndexOf("/") + 1);
             string objectId = key.Substring(key.LastIndexOf("/") + 1);
 
             Console.WriteLine(objectId);
@@ -65,6 +66,7 @@ namespace s3Trigger
                 Bucket = bucket,
                 SourceKey = key,
                 PhotoId = objectId,
+                UserId = orignalUser,
                 TablePhoto = Environment.GetEnvironmentVariable(PHOTO_TABLE)
             };
 
