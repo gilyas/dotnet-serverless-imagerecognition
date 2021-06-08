@@ -45,7 +45,7 @@ namespace store_image_metadata
 
             var photoUpdate = new Photo
             {
-                PhotoId = WebUtility.UrlDecode(input.ObjectId),
+                PhotoId = WebUtility.UrlDecode(input.PhotoId),
                 ProcessingStatus = ProcessingStatus.Succeeded,
                 FullSize = new PhotoImage
                 {
@@ -70,7 +70,7 @@ namespace store_image_metadata
             // update photo table.
             await this._ddbContext.SaveAsync(photoUpdate).ConfigureAwait(false);
 
-            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo recognition completed succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo recognition metadata stored succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
 
             Console.WriteLine(JsonSerializer.Serialize(photoUpdate));
         }

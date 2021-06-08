@@ -9,8 +9,6 @@ namespace store_image_metadata
 {
     public class InputEvent : ExecutionInput
     {
-        public string ObjectId {get; set;}
-
         public ExtractedMetadata ExtractedMetadata { get; set; }
 
         public List<object> ParallelResults { get; set; }
