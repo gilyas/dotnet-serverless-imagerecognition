@@ -9,6 +9,7 @@ using Amazon.StepFunctions.Model;
 using Amazon.Util;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -56,17 +57,19 @@ namespace s3Trigger
             Console.WriteLine(bucket);
             Console.WriteLine(key);
 
-            string orignalUser = key.Substring(key.IndexOf("/uploads/") + 9, key.IndexOf("/") + 1);
-            string objectId = key.Substring(key.LastIndexOf("/") + 1);
+            string[] photoData = key.Split("/").Reverse().Take(2).ToArray();
 
-            Console.WriteLine(objectId);
+            string photoId = photoData[0];
+            string userId = photoData[1];
+
+            Console.WriteLine(photoId);
 
             var input = new
             {
                 Bucket = bucket,
                 SourceKey = key,
-                PhotoId = objectId,
-                UserId = orignalUser,
+                PhotoId = photoId,
+                UserId = userId,
                 TablePhoto = Environment.GetEnvironmentVariable(PHOTO_TABLE)
             };
 
@@ -79,7 +82,7 @@ namespace s3Trigger
 
             Photo photo = new Photo
             {
-                PhotoId = objectId,
+                PhotoId = photoId,
                 SfnExecutionArn = stepResponse.ExecutionArn,
                 ProcessingStatus = ProcessingStatus.Running,
                 UpdatedDate = DateTime.UtcNow

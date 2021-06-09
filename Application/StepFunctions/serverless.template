@@ -104,7 +104,8 @@
                 },
                 "ImageConfig": { "Command": [ "rekognition::rekognition.Function::FunctionHandler" ]},
                 "Role": { "Fn::GetAtt": ["RekognitionFunctionRole", "Arn"] },
-                "MemorySize": 256,
+                "MemorySize": 1536,
+                "Timeout": 300,
                 "Code": {
                     "ImageUri": "./rekognition"
                 }

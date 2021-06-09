@@ -52,11 +52,7 @@ namespace thumbnail
 
             ThumbnailImage image = await GenerateThumbnail(input.Bucket, input.SourceKey, width, height);
 
-            string keyPrefix = input.SourceKey.Substring(0, input.SourceKey.IndexOf("/uploads/"));
-            string orignalUser = input.SourceKey.Substring(input.SourceKey.IndexOf("/uploads/") + 9, input.SourceKey.IndexOf("/") +1 );
-            string orignalPhotoName = input.SourceKey.Substring(input.SourceKey.LastIndexOf("/") + 1);
-
-            string destinationKey = ThumbnailKey(keyPrefix, orignalUser, orignalPhotoName);
+            string destinationKey = input.SourceKey.Replace("uploads", "resized");
 
             using(var inStream = image.thumbnailImage)
             using (var stream = new MemoryStream())
@@ -76,12 +72,6 @@ namespace thumbnail
 
                 return new ThumbnailInfo(width, height, destinationKey, input.Bucket);
             }
-        }
-
-
-        private string ThumbnailKey(string keyPrefix, string userId, string fileName)
-        {
-            return $"{keyPrefix}/resized/{userId}/{fileName}";
         }
 
         private async Task<ThumbnailImage> GenerateThumbnail(string s3Bucket, string srcKey, int width, int height)
