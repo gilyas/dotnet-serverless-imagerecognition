@@ -1,11 +1,25 @@
-<mxfile host="app.diagrams.net" modified="2021-06-10T22:35:19.062Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36" etag="5IM0pTTvZ7W1rXdl1A5O" version="14.6.13" type="github">
+<mxfile host="app.diagrams.net" modified="2021-06-10T22:39:32.314Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36" etag="T-bc3xVKuonaZGtReuPg" version="14.6.13" type="github">
   <diagram id="BZJ9KVFbpimCTmKUlwr4" name="Page-1">
     <mxGraphModel dx="1822" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="RY2GNPGNeXl1zOkJjkwS-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="RY2GNPGNeXl1zOkJjkwS-22" target="RY2GNPGNeXl1zOkJjkwS-30" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-10" y="770" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="819" y="790" />
+              <mxPoint x="-31" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RY2GNPGNeXl1zOkJjkwS-70" value="&lt;span&gt;Notify Subscribers&lt;/span&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontStyle=0" parent="RY2GNPGNeXl1zOkJjkwS-59" vertex="1" connectable="0">
+          <mxGeometry x="0.2036" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="RY2GNPGNeXl1zOkJjkwS-15" value="&lt;font color=&quot;#cc0000&quot;&gt;Image Processing Backend&lt;/font&gt;" style="fillColor=none;verticalAlign=top;fontStyle=0;fontColor=#5A6C86;labelBackgroundColor=#ffffff;html=1;strokeColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="609" y="138" width="456" height="540" as="geometry" />
+          <mxGeometry x="600" y="138" width="465" height="552" as="geometry" />
         </mxCell>
         <mxCell id="RY2GNPGNeXl1zOkJjkwS-46" value="Web Server cluster" style="fillColor=none;strokeColor=#5A6C86;verticalAlign=top;fontStyle=0;fontColor=#5A6C86;labelBackgroundColor=#ffffff;html=1;" parent="1" vertex="1">
           <mxGeometry x="70" y="333" width="244.5" height="247" as="geometry" />
@@ -72,21 +86,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="RY2GNPGNeXl1zOkJjkwS-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="RY2GNPGNeXl1zOkJjkwS-22" target="RY2GNPGNeXl1zOkJjkwS-30" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="-10" y="770" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="819" y="790" />
-              <mxPoint x="-31" y="790" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="RY2GNPGNeXl1zOkJjkwS-70" value="Subscribers" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="RY2GNPGNeXl1zOkJjkwS-59" vertex="1" connectable="0">
-          <mxGeometry x="0.2036" relative="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="RY2GNPGNeXl1zOkJjkwS-22" value="Store Image Metadata" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#D05C17;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.lambda_function;" parent="1" vertex="1">
+        <mxCell id="RY2GNPGNeXl1zOkJjkwS-22" value="Store Image Metadata&lt;br&gt;And Notify Subscribers" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#D05C17;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.lambda_function;" parent="1" vertex="1">
           <mxGeometry x="789" y="583" width="60" height="60" as="geometry" />
         </mxCell>
         <mxCell id="RY2GNPGNeXl1zOkJjkwS-23" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;elbow=vertical;startArrow=none;endFill=1;strokeColor=#545B64;rounded=0;" parent="1" edge="1">
