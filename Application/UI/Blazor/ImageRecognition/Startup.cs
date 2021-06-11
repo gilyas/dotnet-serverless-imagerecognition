@@ -1,6 +1,4 @@
 using ImageRecognition.BlazorFrontend.Areas.Identity;
-using ImageRecognition.BlazorFrontend.Frontend;
-using ImageRecognition.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -17,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ImageRecognition
+namespace ImageRecognition.BlazorFrontend
 {
     public class Startup
     {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common
+namespace ImageRecognition.BlazorFrontend
 {
     public class MessageEvent
     {

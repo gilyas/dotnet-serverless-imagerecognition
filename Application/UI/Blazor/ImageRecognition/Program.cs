@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ImageRecognition
+namespace ImageRecognition.BlazorFrontend
 {
     public class Program
     {
