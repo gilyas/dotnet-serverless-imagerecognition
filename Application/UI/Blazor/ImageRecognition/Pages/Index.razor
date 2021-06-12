@@ -1,38 +1,77 @@
 ﻿@page "/"
+@using ImageRecognition.BlazorFrontend.Models\
+@using System.Threading;
 
-<AuthorizeView>
-    <Authorized>
-        <div class="ui segment">
-            <h3 class="ui header">Add a new album</h3>
-            <div class="ui action left icon input">
-                <form method="post" action="~/album/new/create/">
-                    <input type="text" name="name" id="name" aria-label="Album name" placeholder="Album name" required />
-                    <input type="submit" id="newalbum" data-progress="Creating..." value="New album">
-                </form>
-            </div>
-        </div>
+@inject IServiceClientFactory ServiceClientFactory
+@inject NavigationManager NavigationManager
 
+<div class="ui segment">
+    <h3 class="ui header">Add a new album</h3>
+    <div class="ui action left icon input">
+        <form method="post" action="~/album/new/create/">
+            <input type="text" name="name" id="name" aria-label="Album name" placeholder="Album name" required />
+            <input type="submit" id="newalbum" data-progress="Creating..." value="New album">
+        </form>
+    </div>
+</div>
 
-        @*@if (this.Model.Albums.Count == 0)
+<div class="ui segment">
+    <h3 class="ui header">My Albums</h3>
+    <div role="list" class="ui divided relaxed list">
+
+        @if (this.UserAlbums != null)
         {
-            <p>There are no albums yet. Create new albums and upload photos.</p>
-        }*@
+            @foreach (var userAlbum in this.UserAlbums)
+            {
+                <div role="listitem" class="item">
+                    <a href="/album/@userAlbum.AlbumId/">@userAlbum.Name</a>
+                </div>
+            }
+        }
 
-        <div class="ui segment">
-            <h3 class="ui header">My Albums</h3>
-            <div role="list" class="ui divided relaxed list">
-                @*@foreach (Album album in this.Model.Albums)
-                {
-                    <div role="listitem" class="item">
-                        <a href="/album/@album.AlbumId/">@album.Name</a>
-                    </div>
-                }*@
+    </div>
+</div>
 
-            </div>
+@if (!this.Loaded)
+{
+    <p>
+        <div class="d-flex align-items-center">
+            <strong>Loading albums...</strong>
+            <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
         </div>
-    </Authorized>
-    <NotAuthorized>
-        <h1>Authorization Fail!</h1>
-        <p>Managing Albums is currently restricted to authenticated users only.</p>
-    </NotAuthorized>
-</AuthorizeView>
+    </p>
+}
+
+@code {
+
+    bool Loaded { get; set; }
+    List<Album> UserAlbums = new List<Album>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAlbums();
+    }
+
+    async Task LoadAlbums()
+    {
+        try
+        {
+            var albumClient = await ServiceClientFactory.CreateAlbumClient();
+
+            var albums = await albumClient.GetUserAlbumsAsync();
+            foreach (var album in albums)
+            {
+                UserAlbums.Add(album);
+            }
+
+            this.Loaded = true;
+            //this.StateHasChanged();
+        }
+        catch (Exception)
+        {
+            NavigationManager.NavigateTo("Identity/Account/Login", true);
+        }
+    }
+
+}

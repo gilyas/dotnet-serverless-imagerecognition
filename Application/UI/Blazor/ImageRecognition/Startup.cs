@@ -41,11 +41,23 @@ namespace ImageRecognition.BlazorFrontend
 
             services.TryAddAWSService<Amazon.S3.IAmazonS3>();
 
+            services.AddScoped<IServiceClientFactory, ServiceClientFactory>();
+            services.AddScoped<ICommunicationClientFactory, CommunicationClientFactory>();
+
 
             services.AddRazorPages();
-            services.AddServerSideBlazor();
-            
+            services.AddServerSideBlazor().AddHubOptions(o =>
+            {
+                o.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+            });
+
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+            //// For Blazor to read local files
+            //services.AddFileReaderService(options =>
+            //{
+            //    options.InitializeOnFirstCall = true;
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
