@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.S3;
 using ImageRecognition.API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,26 @@ namespace ImageRecognition.API.Controllers
             var albums = await search.GetRemainingAsync().ConfigureAwait(false);
 
             return new JsonResult(albums);
+        }
+
+        /// <summary>
+        /// Get the list of albums the user has created.
+        /// </summary>
+        /// <param name="includePublic">If true then also include the galleries that have been marked as public.</param>
+        /// <returns></returns>
+        [HttpGet("{albumId}")]
+        [ProducesResponseType(200, Type = typeof(Album))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        public async Task<JsonResult> GetAlbumById(string albumId)
+        {
+            var userId = Utilities.GetUsername(this.HttpContext.User);
+
+            var albumQuery = this._ddbContext.QueryAsync<Album>(userId, QueryOperator.Equal, new[] { albumId });
+
+            var album = await albumQuery.GetRemainingAsync().ConfigureAwait(false);
+
+            return new JsonResult(album.FirstOrDefault());
         }
 
 

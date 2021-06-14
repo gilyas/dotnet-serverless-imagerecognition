@@ -89,7 +89,8 @@
 				"Role": null,
                 "Policies" : [
 					"arn:aws:iam::aws:policy/AWSLambda_FullAccess",
-					"arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+					"arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 				],
                 "Environment" : {
 					"Variables" : {
@@ -114,7 +115,10 @@
 				"Timeout": 30,
                 "ImageUri": ".",
 				"Role": null,
-                "Policies" : ["arn:aws:iam::aws:policy/AWSLambda_FullAccess"],
+                "Policies" : [
+                    "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
+                    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+                    ],
                 "Environment" : {
 					"Variables" : {
 						"COMMUNICATION_TABLE" : { "Ref" : "ConnectionsTable" },

@@ -56,7 +56,7 @@ namespace ImageRecognition.BlazorFrontend
 
             var cws = new ClientWebSocket();
             cws.Options.SetRequestHeader("Authorization", cognitoUser.SessionTokens.IdToken);
-            await cws.ConnectAsync(new Uri(_appOptions.ImageRecognitionApiUrl), token);
+            await cws.ConnectAsync(new Uri(_appOptions.ImageRecognitionWebSocketAPI), token);
 
             return new CommunicationClient(cws);
         }

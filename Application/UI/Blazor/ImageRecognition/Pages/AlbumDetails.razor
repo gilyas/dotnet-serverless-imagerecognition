@@ -1,0 +1,205 @@
+﻿@page "/album/{AlbumId}"
+@using ImageRecognition.BlazorFrontend.Models
+@using System.Collections.Generic;
+@using System.Threading;
+@implements IDisposable
+
+@inject IServiceClientFactory ServiceClientFactory
+@inject ICommunicationClientFactory CommunicationClientFactory
+@inject NavigationManager NavigationManager
+
+<div class="ui padded grid">
+    <div class="column">
+        <div class="ui segment">
+            @if (! string.IsNullOrEmpty(Message))
+            {
+                <p>@Message</p>
+            }
+            else
+            {
+                <h3 class="ui header">@AlbumWrapper?.Album.Name</h3>
+                <div>
+                    <div asp-validation-summary="All"></div>
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-10 form-group">
+                                <label class="control-label">Select photos to upload.</label>
+                                <input type="file"
+                                       class="form-control form-control-file"
+                                       id="files"
+                                       asp-for="PhotoSourceImages"
+                                       aria-label="Upload photo"
+                                       required multiple
+                                       style="height:auto"
+                                       accept="image/*" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <input type="submit" asp-page-handler="upload" value="Upload Photo" data-progress="Uploading..." class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <div class="ui hidden divider"></div>
+                    <div class="ui cards">
+                        @foreach (var photo in AlbumPhotos)
+                        {
+                            if (photo.Photo.ProcessingStatus != ProcessingStatus.Succeeded)
+                            {
+                                <div class="ui card">
+                                    <div class="ui active transition visible dimmer" style="display: flex !important;">
+                                        <div class="content">
+                                            <div class="ui text loader"> Processing </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ui card">
+                                    <div class="center aligned content">
+                                        <div>
+                                            <div style="position: relative;">
+                                                <img src="@photo.Photo.Thumbnail.Url">
+                                                <div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content">
+                                        <div class="meta"><span class="date">Uploaded: @photo.Photo.UploadTime</span></div>
+                                        <div class="description">
+                                            <p><b>Detected labels:</b></p>
+                                            @if (photo.Photo?.ObjectDetected != null)
+                                            {
+                                                @foreach (var label in photo.Photo.ObjectDetected)
+                                                {
+                                                    <div class="ui orange basic label">@label</div>
+                                                }
+                                            }
+                                            <p><b>Image size: </b>@photo.Photo.FullSize.Height x @photo.Photo.FullSize.Width</p>
+                                            @if (photo.Photo?.GeoLocation != null)
+                                            {
+                                                <p><strong>Geolocation: </strong>@photo.Photo.GeoLocation.ToString()</p>
+                                            }
+                                            @if (photo.Photo?.ExifModel != null)
+                                            {
+                                                <p><strong>Device: </strong>@photo.Photo.ExifMake @photo.Photo.ExifModel</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    bool Loaded { get; set; }
+    System.Collections.ObjectModel.ObservableCollection<PhotoWrapper> AlbumPhotos = new System.Collections.ObjectModel.ObservableCollection<PhotoWrapper>();
+
+    PhotoClient _photoClient;
+
+    CancellationTokenSource _cancelSource;
+    ICommunicationClient _communicationClient;
+
+    [Parameter]
+    public string AlbumId { get; set; }
+
+    public AlbumWrapper AlbumWrapper { get; set; }
+
+    public string Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cancelSource = new CancellationTokenSource();
+
+        _communicationClient = await CommunicationClientFactory.CreateCommunicationClient(_cancelSource.Token);
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(AlbumId))
+        {
+            Message = "Album Id is required.";
+        }
+        else
+        {
+            var albumClient = await ServiceClientFactory.CreateAlbumClient();
+            AlbumWrapper = new AlbumWrapper(await albumClient.GetAlbumByIdAsync(AlbumId));
+
+            this._photoClient = await ServiceClientFactory.CreatePhotoClient();
+            await ReloadPhotos();
+
+            _ = ReadCommunicationEvents();
+        }
+    }
+
+    async Task ReloadPhotos()
+    {
+        try
+        {
+            var photos = await _photoClient.GetPhotosByAlbumAsync(AlbumId);
+            AlbumPhotos.Clear();
+            foreach (var photo in photos)
+            {
+                AlbumPhotos.Add(new PhotoWrapper(photo));
+            }
+
+            this.Loaded = true;
+        }
+        catch (Exception)
+        {
+            NavigationManager.NavigateTo("Identity/Account/Login", true);
+        }
+    }
+
+    async Task ReadCommunicationEvents()
+    {
+        while (!_cancelSource.IsCancellationRequested)
+        {
+            var evnt = await _communicationClient.ReadEventAsync(_cancelSource.Token);
+            if (evnt == null)
+                continue;
+
+            foreach (var photoWrapper in this.AlbumPhotos)
+            {
+                if (string.Equals(photoWrapper.Photo.PhotoId, evnt.ResourceId, StringComparison.Ordinal))
+                {
+                    if (evnt.CompleteEvent)
+                    {
+                        photoWrapper.Photo.ProcessingStatus = ProcessingStatus.Succeeded;
+                        photoWrapper.Status = ProcessingStatus.Succeeded.ToString();
+                    }
+                    else
+                    {
+                        photoWrapper.Status = evnt.Message;
+                    }
+
+                    this.StateHasChanged();
+                }
+            }
+        }
+    }
+
+
+    public void Dispose()
+    {
+        if (_communicationClient != null)
+        {
+            _cancelSource.Cancel();
+            _communicationClient.Dispose();
+            _communicationClient = null;
+        }
+    }
+
+}

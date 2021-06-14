@@ -2,6 +2,6 @@
 @code {
     protected override void OnInitialized()
     {
-        Navigation.NavigateTo("Identity/Account/Login");
+        Navigation.NavigateTo("Identity/Account/Login", forceLoad: true);
     }
 }
