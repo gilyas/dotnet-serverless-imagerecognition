@@ -56,23 +56,23 @@ namespace ImageRecognition.API.Controllers
                     continue;
                 }
 
-                photos.Add(photo);
+                photo.Thumbnail ??= new PhotoImage();
+                photo.FullSize ??= new PhotoImage();
 
-                if (photo.ProcessingStatus == ProcessingStatus.Succeeded)
+                photo.Thumbnail.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
                 {
-                    photo.Thumbnail.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
-                    {
-                        BucketName = _appOptions.PhotoStorageBucket,
-                        Key = $"private/resized/{userId}/{photo.PhotoId}",
-                        Expires = DateTime.UtcNow.AddHours(1)
-                    });
-                    photo.FullSize.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
-                    {
-                        BucketName = _appOptions.PhotoStorageBucket,
-                        Key = $"private/uploads/{userId}/{photo.PhotoId}",
-                        Expires = DateTime.UtcNow.AddHours(1)
-                    });
-                }
+                    BucketName = _appOptions.PhotoStorageBucket,
+                    Key = $"private/resized/{userId}/{photo.PhotoId}",
+                    Expires = DateTime.UtcNow.AddHours(1)
+                });
+                photo.FullSize.Url = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
+                {
+                    BucketName = _appOptions.PhotoStorageBucket,
+                    Key = $"private/uploads/{userId}/{photo.PhotoId}",
+                    Expires = DateTime.UtcNow.AddHours(1)
+                });
+
+                photos.Add(photo);
             }
 
             return new JsonResult(photos);

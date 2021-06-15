@@ -18,30 +18,33 @@
             }
             else
             {
+        <div class="simple-form">
+            <div class="col-md-10 form-group">
                 <h3 class="ui header">@AlbumWrapper?.Album.Name</h3>
-                <div class="simple-form">
-                    <div class="col-md-10 form-group">
-                        <div class="form-control form-control-file">
-                            <label class="control-label">Select photos to upload.</label>
-                            <InputFile class="form-control form-control-file"
-                                       id="files"
-                                       aria-label="Upload photo"
-                                       required multiple
-                                       style="height:auto"
-                                       OnChange="OnInputFileChange"
-                                       accept=".jpg,.png" />
-                        </div>
 
-                    </div>
-                    @*<button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Upload Photo</button>*@
-                </div>
+                <label class="control-label">Select photos to upload.</label>
+                <InputFile class="form-control form-control-file"
+                           id="files"
+                           aria-label="Upload photo"
+                           required multiple
+                           style="height:auto"
+                           OnChange="OnInputFileChange"
+                           accept=".jpg,.png" />
 
-                <p style="margin-top:15px">
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
-                    </div><br />
-                    <small>@ProgressMessage</small>
-                </p>
+            </div>
+
+            <button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Submit</button>
+
+            <p style="margin-top:15px">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
+                </div><br />
+                <small>@ProgressMessage</small>
+            </p>
+            @*<button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Upload Photo</button>*@
+        </div>
+
+
 
                 <div>
                     <div class="ui hidden divider"></div>
@@ -113,26 +116,28 @@
 }
 
 @code {
-        bool Loaded { get; set; }
-        System.Collections.ObjectModel.ObservableCollection<PhotoWrapper> AlbumPhotos = new System.Collections.ObjectModel.ObservableCollection<PhotoWrapper>();
+    bool Loaded { get; set; }
+    System.Collections.ObjectModel.ObservableCollection<PhotoWrapper> AlbumPhotos = new System.Collections.ObjectModel.ObservableCollection<PhotoWrapper>();
 
-        PhotoClient _photoClient;
+    private List<IBrowserFile> loadedFiles = new();
 
-        CancellationTokenSource _cancelSource;
-        ICommunicationClient _communicationClient;
+    PhotoClient _photoClient;
 
-        string Name { get; set; }
+    CancellationTokenSource _cancelSource;
+    ICommunicationClient _communicationClient;
 
-        string SelectedGallery { get; set; }
+    string Name { get; set; }
 
-        bool DisableInput = false;
-        long ProgressNow { get; set; } = 0;
-        long ProgressMax { get; set; } = 100;
-        string ProgressStyle { get; set; } = "width: 0%;";
-        string ProgressMessage { get; set; }
+    string SelectedGallery { get; set; }
 
-        [Parameter]
-        public string AlbumId { get; set; }
+    bool DisableInput = false;
+    long ProgressNow { get; set; } = 0;
+    long ProgressMax { get; set; } = 100;
+    string ProgressStyle { get; set; } = "width: 0%;";
+    string ProgressMessage { get; set; }
+
+    [Parameter]
+    public string AlbumId { get; set; }
 
     public AlbumWrapper AlbumWrapper { get; set; }
 
@@ -204,11 +209,12 @@
         }
     }
 
-    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    private async Task SubmitForm()
     {
+
         long maxFileSize = 1024 * 1024 * 15;
 
-        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        foreach (var file in loadedFiles)
         {
             using (var stream = file.OpenReadStream(maxFileSize))
             {
@@ -224,13 +230,20 @@
                     this.StateHasChanged();
                 });
 
-
-
                 await _photoClient.AddPhotoAsync(AlbumId, file.Name, uploadUrl);
 
-                await ReloadPhotos();
-
             }
+        }
+
+        loadedFiles.Clear();
+        await ReloadPhotos();
+    }
+
+    private void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            loadedFiles.Add(file);
         }
     }
 

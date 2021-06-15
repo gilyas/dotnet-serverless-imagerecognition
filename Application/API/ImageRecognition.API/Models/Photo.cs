@@ -25,7 +25,7 @@ namespace ImageRecognition.API.Models
 
         public string[] ObjectDetected { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         public string Format { get; set; }
 

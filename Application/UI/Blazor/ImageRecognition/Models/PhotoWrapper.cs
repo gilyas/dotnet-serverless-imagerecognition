@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using ImageRecognition.API.Client;
+using Newtonsoft.Json;
 
 namespace ImageRecognition.BlazorFrontend.Models
 {
@@ -43,13 +44,18 @@ namespace ImageRecognition.BlazorFrontend.Models
             {
                 if (evnt.CompleteEvent)
                 {
-                    var photo = JsonSerializer.Deserialize<Photo>(evnt.Data);
+                    var photo = JsonConvert.DeserializeObject<Photo>(evnt.Data);
+
+                    string signedThumbnailUrl = Photo.Thumbnail.Url;
+                    string signedFullSizeUrl = Photo.FullSize.Url;
 
                     if (photo != null)
                     {
                         this.Photo = photo;
                     }
 
+                    Photo.Thumbnail.Url = signedThumbnailUrl;
+                    Photo.FullSize.Url = signedFullSizeUrl;
                     Photo.ProcessingStatus = ProcessingStatus.Succeeded;
                     Status = ProcessingStatus.Succeeded.ToString();
                 }
