@@ -40,6 +40,7 @@ namespace ImageRecognition.BlazorFrontend
             services.AddCognitoIdentity();
 
             services.TryAddAWSService<Amazon.S3.IAmazonS3>();
+            services.AddScoped<IFileUploader, FileUploader>();
 
             services.AddScoped<IServiceClientFactory, ServiceClientFactory>();
             services.AddScoped<ICommunicationClientFactory, CommunicationClientFactory>();

@@ -7,41 +7,41 @@
 @inject IServiceClientFactory ServiceClientFactory
 @inject ICommunicationClientFactory CommunicationClientFactory
 @inject NavigationManager NavigationManager
+@inject IFileUploader FileUploader
 
 <div class="ui padded grid">
     <div class="column">
         <div class="ui segment">
-            @if (! string.IsNullOrEmpty(Message))
+            @if (!string.IsNullOrEmpty(Message))
             {
                 <p>@Message</p>
             }
             else
             {
                 <h3 class="ui header">@AlbumWrapper?.Album.Name</h3>
-                <div>
-                    <div asp-validation-summary="All"></div>
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-md-10 form-group">
-                                <label class="control-label">Select photos to upload.</label>
-                                <input type="file"
-                                       class="form-control form-control-file"
+                <div class="simple-form">
+                    <div class="col-md-10 form-group">
+                        <div class="form-control form-control-file">
+                            <label class="control-label">Select photos to upload.</label>
+                            <InputFile class="form-control form-control-file"
                                        id="files"
-                                       asp-for="PhotoSourceImages"
                                        aria-label="Upload photo"
                                        required multiple
                                        style="height:auto"
-                                       accept="image/*" />
-                            </div>
+                                       OnChange="OnInputFileChange"
+                                       accept=".jpg,.png" />
+                        </div>
 
-                        </div>
-                        <div class="row">
-                            <div class="col-md-10">
-                                <input type="submit" asp-page-handler="upload" value="Upload Photo" data-progress="Uploading..." class="btn btn-primary" />
-                            </div>
-                        </div>
-                    </form>
+                    </div>
+                    @*<button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Upload Photo</button>*@
                 </div>
+
+                <p style="margin-top:15px">
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
+                    </div><br />
+                    <small>@ProgressMessage</small>
+                </p>
 
                 <div>
                     <div class="ui hidden divider"></div>
@@ -102,21 +102,43 @@
     </div>
 </div>
 
+@if (!this.Loaded)
+{
+    <p>
+        <div class="d-flex align-items-center">
+            <strong>Loading photos...</strong>
+            <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+        </div>
+    </p>
+}
+
 @code {
-    bool Loaded { get; set; }
-    System.Collections.ObjectModel.ObservableCollection<PhotoWrapper> AlbumPhotos = new System.Collections.ObjectModel.ObservableCollection<PhotoWrapper>();
+        bool Loaded { get; set; }
+        System.Collections.ObjectModel.ObservableCollection<PhotoWrapper> AlbumPhotos = new System.Collections.ObjectModel.ObservableCollection<PhotoWrapper>();
 
-    PhotoClient _photoClient;
+        PhotoClient _photoClient;
 
-    CancellationTokenSource _cancelSource;
-    ICommunicationClient _communicationClient;
+        CancellationTokenSource _cancelSource;
+        ICommunicationClient _communicationClient;
 
-    [Parameter]
-    public string AlbumId { get; set; }
+        string Name { get; set; }
+
+        string SelectedGallery { get; set; }
+
+        bool DisableInput = false;
+        long ProgressNow { get; set; } = 0;
+        long ProgressMax { get; set; } = 100;
+        string ProgressStyle { get; set; } = "width: 0%;";
+        string ProgressMessage { get; set; }
+
+        [Parameter]
+        public string AlbumId { get; set; }
 
     public AlbumWrapper AlbumWrapper { get; set; }
 
     public string Message { get; set; }
+
+    private int maxAllowedFiles = 3;
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,18 +197,39 @@
             {
                 if (string.Equals(photoWrapper.Photo.PhotoId, evnt.ResourceId, StringComparison.Ordinal))
                 {
-                    if (evnt.CompleteEvent)
-                    {
-                        photoWrapper.Photo.ProcessingStatus = ProcessingStatus.Succeeded;
-                        photoWrapper.Status = ProcessingStatus.Succeeded.ToString();
-                    }
-                    else
-                    {
-                        photoWrapper.Status = evnt.Message;
-                    }
-
+                    photoWrapper.Update(evnt);
                     this.StateHasChanged();
                 }
+            }
+        }
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        long maxFileSize = 1024 * 1024 * 15;
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            using (var stream = file.OpenReadStream(maxFileSize))
+            {
+                var uploadUrl = await FileUploader.UploadFileAsync(stream, (evnt) =>
+                {
+                    this.ProgressNow = evnt.UploadBytes;
+
+                    var percent = (int)((double)evnt.UploadBytes / (double)this.ProgressMax * 100.0);
+                    this.ProgressStyle = $"width: {percent}%;";
+
+                    this.ProgressMessage = $"Bytes read: {this.ProgressNow} / {this.ProgressMax}, Parts upload: {evnt.UploadParts}";
+
+                    this.StateHasChanged();
+                });
+
+
+
+                await _photoClient.AddPhotoAsync(AlbumId, file.Name, uploadUrl);
+
+                await ReloadPhotos();
+
             }
         }
     }

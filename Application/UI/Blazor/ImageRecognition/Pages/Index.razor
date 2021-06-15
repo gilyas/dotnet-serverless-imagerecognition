@@ -5,14 +5,12 @@
 @inject IServiceClientFactory ServiceClientFactory
 @inject NavigationManager NavigationManager
 
-<div class="ui segment">
+<div class="col-md-12 ui segment form-group">
     <h3 class="ui header">Add a new album</h3>
-    <div class="ui action left icon input">
-        <form method="post" action="~/album/new/create/">
-            <input type="text" name="name" id="name" aria-label="Album name" placeholder="Album name" required />
-            <input type="submit" id="newalbum" data-progress="Creating..." value="New album">
-        </form>
+    <div class="form-group">
+        <input class="form-control" type="text" @bind="@AlbumName" id="name" aria-label="Album name" placeholder="Album name" required />
     </div>
+    <button class="btn btn-primary" @onclick="SubmitForm">New album</button>
 </div>
 
 <div class="ui segment">
@@ -47,9 +45,14 @@
     bool Loaded { get; set; }
     List<Album> UserAlbums = new List<Album>();
 
+    public string AlbumName { get; set; }
+
+    AlbumClient _albumClient;
 
     protected override async Task OnInitializedAsync()
     {
+        _albumClient = await ServiceClientFactory.CreateAlbumClient();
+
         await LoadAlbums();
     }
 
@@ -57,9 +60,7 @@
     {
         try
         {
-            var albumClient = await ServiceClientFactory.CreateAlbumClient();
-
-            var albums = await albumClient.GetUserAlbumsAsync();
+            var albums = await _albumClient.GetUserAlbumsAsync();
             foreach (var album in albums)
             {
                 UserAlbums.Add(album);
@@ -71,6 +72,19 @@
         {
             NavigationManager.NavigateTo("Identity/Account/Login", true);
         }
+    }
+
+    async Task SubmitForm() {
+
+        var createAlbumResult = await _albumClient.CreateAlbumAsync(AlbumName);
+
+        var album = new Album()
+        {
+            Name = AlbumName,
+            AlbumId = createAlbumResult.AlbumId
+        };
+
+        UserAlbums.Add(album);
     }
 
 }

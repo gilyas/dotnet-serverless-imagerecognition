@@ -59,7 +59,7 @@ namespace extract_image_metadata
                     }
                 }
 
-                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo metadata extracted succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo metadata extracted succesfully" }, ImageRecognitionLogger.Target.All);
 
                 return metadata;
             }

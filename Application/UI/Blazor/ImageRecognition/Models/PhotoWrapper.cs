@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using ImageRecognition.API.Client;
@@ -36,6 +37,28 @@ namespace ImageRecognition.BlazorFrontend.Models
             }
         }
 
+        public void Update(MessageEvent evnt)
+        {
+            if (string.Equals(Photo.PhotoId, evnt.ResourceId, StringComparison.Ordinal))
+            {
+                if (evnt.CompleteEvent)
+                {
+                    var photo = JsonSerializer.Deserialize<Photo>(evnt.Data);
+
+                    if (photo != null)
+                    {
+                        this.Photo = photo;
+                    }
+
+                    Photo.ProcessingStatus = ProcessingStatus.Succeeded;
+                    Status = ProcessingStatus.Succeeded.ToString();
+                }
+                else
+                {
+                    Status = evnt.Message;
+                }
+            }
+        }
 
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

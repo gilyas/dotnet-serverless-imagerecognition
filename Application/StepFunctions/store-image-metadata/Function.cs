@@ -70,9 +70,11 @@ namespace store_image_metadata
             // update photo table.
             await this._ddbContext.SaveAsync(photoUpdate).ConfigureAwait(false);
 
-            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo recognition metadata stored succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+            string data = JsonSerializer.Serialize(photoUpdate);
 
-            Console.WriteLine(JsonSerializer.Serialize(photoUpdate));
+            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo recognition metadata stored succesfully", Data = data, CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+
+            Console.WriteLine(data);
         }
     }
 }

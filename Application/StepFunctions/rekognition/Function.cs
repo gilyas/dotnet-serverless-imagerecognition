@@ -84,7 +84,7 @@ namespace rekognition
                 }
             });
 
-            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo labels extracted succesfully", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo labels extracted succesfully" }, ImageRecognitionLogger.Target.All);
 
             return detectResponses.Labels;
         }

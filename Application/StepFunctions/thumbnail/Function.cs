@@ -68,7 +68,7 @@ namespace thumbnail
                     InputStream = stream
                 });
 
-                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo thumbnail created", CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo thumbnail created" }, ImageRecognitionLogger.Target.All);
 
                 return new ThumbnailInfo(width, height, destinationKey, input.Bucket);
             }
