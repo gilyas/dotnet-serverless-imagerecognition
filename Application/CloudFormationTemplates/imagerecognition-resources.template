@@ -528,17 +528,7 @@
                     "Ref": "ImageRecognitionVpc"
                 },
                 "TargetType": "ip",				
-                "Name": {
-                    "Fn::Join": [
-                        "-",
-                        [
-                            {
-                                "Ref": "AWS::StackName"
-                            },
-                            "Default"
-                        ]
-                    ]
-                }
+                "Name": "ImageRecognition-Default"
             }
         },
 
