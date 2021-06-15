@@ -31,16 +31,18 @@
                            OnChange="OnInputFileChange"
                            accept=".jpg,.png" />
 
+
+                <button style="margin-top:15px" @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Submit</button>
+
+                <p style="margin-top:15px">
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
+                    </div><br />
+                    <small>@ProgressMessage</small>
+                </p>
+
             </div>
-
-            <button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Submit</button>
-
-            <p style="margin-top:15px">
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
-                </div><br />
-                <small>@ProgressMessage</small>
-            </p>
+            
             @*<button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Upload Photo</button>*@
         </div>
 

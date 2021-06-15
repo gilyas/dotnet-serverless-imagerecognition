@@ -5,52 +5,52 @@
     "Parameters": {
         "FrontendCluster": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/FrontendCluster"
+            "Default": "/ImageRecognition/FrontendCluster"
         },
 
         "FrontendExecutionRole": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/FrontendExecutionRole"
+            "Default": "/ImageRecognition/FrontendExecutionRole"
         },
 
         "FrontendTaskRole": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/FrontendTaskRole"
+            "Default": "/ImageRecognition/FrontendTaskRole"
         },
 
         "FrontendTag": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/FrontendTag"
+            "Default": "/ImageRecognition/FrontendTag"
         },
 
         "ECSSecurityGroup": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/ECSSecurityGroup"
+            "Default": "/ImageRecognition/ECSSecurityGroup"
         },
 
         "SubnetA": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/SubnetA"
+            "Default": "/ImageRecognition/SubnetA"
         },
 
         "SubnetB": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/SubnetB"
+            "Default": "/ImageRecognition/SubnetB"
         },
 
         "SubnetC": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/SubnetC"
+            "Default": "/ImageRecognition/SubnetC"
         },
 
         "LoadBalancerName": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/LoadBalancerName"
+            "Default": "/ImageRecognition/LoadBalancerName"
         },
 
         "TargetGroupArn": {
             "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/CloudMosaic/TargetGroupArn"
+            "Default": "/ImageRecognition/TargetGroupArn"
         }
 
     },
@@ -71,11 +71,11 @@
                                         {
                                             "Ref": "AWS::StackName"
                                         },
-                                        "-CloudMosaicBlazerFrontend"
+                                        "-ImageRecognitionBlazerFrontend"
                                     ]
                                 ]
                             },
-                            "CloudMosaicBlazerFrontend"
+                            "ImageRecognitionBlazerFrontend"
                         ]
                     ]
                 }
@@ -92,13 +92,13 @@
                             {
                                 "Ref": "AWS::StackName"
                             },
-                            "-CloudMosaicBlazerFrontend"
+                            "-ImageRecognitionBlazerFrontend"
                         ]
                     ]
                 },
                 "ContainerDefinitions": [
                     {
-                        "Name": "CloudMosaicBlazerFrontend",
+                        "Name": "ImageRecognitionBlazerFrontend",
                         "Image": {
                             "Fn::Join": [
                                 "",
@@ -204,7 +204,7 @@
                             "Ref": "TargetGroupArn"
                         },
                         "ContainerPort": 80,
-                        "ContainerName": "CloudMosaicBlazerFrontend"
+                        "ContainerName": "ImageRecognitionBlazerFrontend"
                     }
                 ]
             }

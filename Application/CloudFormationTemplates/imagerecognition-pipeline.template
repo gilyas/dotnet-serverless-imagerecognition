@@ -252,13 +252,13 @@
 		    }
 		},
 
-		"ImageRecognitionMvcFrontendBuild" : {
+		"ImageRecognitionFrontendBuild" : {
 		    "Type" : "AWS::CodeBuild::Project",
 		    "Properties" : {
 		        "Artifacts" : {
 					"Type" : "CODEPIPELINE"
 		        },
-		        "Name"      : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-MvcFrontEnd" ] ]},
+		        "Name"      : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-Blazer" ] ]},
 		        "ServiceRole" : { "Ref" : "CodeBuildRole" },
                 "Environment" : {
 					"ComputeType" : "BUILD_GENERAL1_MEDIUM",
@@ -267,7 +267,7 @@
                     "PrivilegedMode" : true
 				},
 		        "Source"      : {
-		            "BuildSpec" : "Application/UI/mvc-frontend/ImageRecognition/buildspec.yml",
+		            "BuildSpec" : "Application/UI/Blazor/ImageRecognition/buildspec.yml",
 		            "Type"      : "CODEPIPELINE"
 		        }
 		    }
@@ -547,7 +547,7 @@
 						]
 					},
 					{
-						"Name" : "ImageRecognition-MvcFrontend",
+						"Name" : "ImageRecognition-BlazerFrontend",
                         "Actions" : [
 							{
 								"Name" : "Build-BlazerFrontend",
@@ -564,11 +564,11 @@
 								],
                                 "OutputArtifacts" : [
 									{
-										"Name" : "ImageRecognitionMvcBundle"
+										"Name" : "CloudMosaicBlazerBundle"
 									}
 								],
                                 "Configuration" : {
-									"ProjectName" : { "Ref" : "ImageRecognitionMvcFrontendBuild" }
+									"ProjectName" : { "Ref" : "ImageRecognitionFrontendBuild" }
 								},
                                 "RunOrder" : 1
 							},
@@ -587,15 +587,15 @@
 								],
 								"Configuration" : {
 									"ActionMode" : "CREATE_UPDATE",
-									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ECSMvcService" ] ]},
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ECSBlazerService" ] ]},
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
-									"TemplatePath" : "TheSource::Application/UI/mvc-frontend/ImageRecognition/ECS-Service.template"
+									"TemplatePath" : "TheSource::Application/UI/Blazor/ImageRecognition/ECS-Service.template"
 								},
                                 "RunOrder" : 2
 							},
 							{
-								"Name" : "Deploy-MvcFrontend",
+								"Name" : "Deploy-BlazerFrontend",
                                 "ActionTypeId" : {
 									"Category" : "Deploy",
                                     "Provider" : "ECS",
@@ -604,11 +604,11 @@
 								},
                                 "InputArtifacts" : [
 									{
-										"Name" : "ImageRecognitionMvcBundle"
+										"Name" : "ImageRecognitionBlazerBundle"
 									}
 								],
                                 "Configuration" : {
-									"ClusterName" : {"Ref": "FrontendCluster"},
+									"ClusterName" : { "Ref" : "FrontendCluster" },
 									"ServiceName":  "Frontend",
 									"FileName":  "imagedefinitions.json"
 								},

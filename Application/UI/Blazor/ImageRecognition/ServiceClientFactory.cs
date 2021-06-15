@@ -39,25 +39,25 @@ namespace ImageRecognition.BlazorFrontend
         public async Task<AlbumClient> CreateAlbumClient()
         {
             var httpClient = await ConstructHttpClient();
-            var mosaicClient = new AlbumClient(httpClient)
+            var albumClient = new AlbumClient(httpClient)
             {
                 BaseUrl = this._appOptions.ImageRecognitionApiUrl
             };
 
 
-            return mosaicClient;
+            return albumClient;
         }
 
 
         public async Task<PhotoClient> CreatePhotoClient()
         {
             var httpClient = await ConstructHttpClient();
-            var galleryClient = new PhotoClient(httpClient)
+            var photoClient = new PhotoClient(httpClient)
             {
                 BaseUrl = this._appOptions.ImageRecognitionApiUrl
             };
 
-            return galleryClient;
+            return photoClient;
         }
 
 

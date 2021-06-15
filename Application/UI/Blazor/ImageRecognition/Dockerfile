@@ -6,8 +6,8 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Clients/ImageRecognition.BlazorFrontend/ImageRecognition.BlazorFrontend.csproj", "Clients/ImageRecognition.BlazorFrontend/"]
-COPY ["Clients/CloudMosaic.API.Client/CloudMosaic.API.Client.csproj", "Clients/CloudMosaic.API.Client/"]
-COPY ["Communication/CloudMosaic.Communication.Manager/CloudMosaic.Communication.Manager.csproj", "Communication/CloudMosaic.Communication.Manager/"]
+COPY ["Clients/ImageRecognition.API.Client/ImageRecognition.API.Client.csproj", "Clients/ImageRecognition.API.Client/"]
+COPY ["Communication/ImageRecognition.Communication.Manager/ImageRecognition.Communication.Manager.csproj", "Communication/ImageRecognition.Communication.Manager/"]
 
 RUN dotnet restore "Clients/ImageRecognition.BlazorFrontend/ImageRecognition.BlazorFrontend.csproj"
 COPY . .

@@ -2,20 +2,20 @@ version: 0.2
 
 env:
     parameter-store:
-        DOCKER_TAG: "/CloudMosaic/FrontendTag"
-        DOCKER_REPO: "/CloudMosaic/FrontendRepository"
+        DOCKER_TAG: "/ImageRecognition/FrontendTag"
+        DOCKER_REPO: "/ImageRecognition/FrontendRepository"
 phases:
   install:
     commands:
       - dotnet tool install -g Amazon.ECS.Tools
   build:
     commands:
-      - cd ./Application/Clients/ImageRecognition.BlazorFrontend
+      - cd ./Application/UI/Blazor/ImageRecognition
       - /root/.dotnet/tools/dotnet-ecs push-image --config-file codebuild-defaults.json --tag $DOCKER_TAG
   post_build:
     commands:
-      - printf '[{"name":"CloudMosaicBlazerFrontend","imageUri":"%s"}]' $DOCKER_REPO > imagedefinitions.json
+      - printf '[{"name":"ImageRecognitionBlazerFrontend","imageUri":"%s"}]' $DOCKER_REPO > imagedefinitions.json
 artifacts:
   files:
-    - ./Application/Clients/ImageRecognition.BlazorFrontend/imagedefinitions.json
+    - ./Application/UI/Blazor/ImageRecognition/imagedefinitions.json
   discard-paths: yes
