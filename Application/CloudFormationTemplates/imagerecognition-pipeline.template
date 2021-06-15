@@ -564,7 +564,7 @@
 								],
                                 "OutputArtifacts" : [
 									{
-										"Name" : "CloudMosaicBlazerBundle"
+										"Name" : "ImageRecognitionBlazerBundle"
 									}
 								],
                                 "Configuration" : {

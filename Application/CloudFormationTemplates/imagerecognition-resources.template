@@ -519,12 +519,26 @@
             "Properties": {
                 "Port": "80",
                 "Protocol": "HTTP",
-                "TargetGroupAttributes": [],
+                "TargetGroupAttributes": [
+					{"Key" : "stickiness.enabled", "Value" : "true" },
+					{"Key" : "stickiness.type", "Value" : "lb_cookie" }
+				],
                 "Targets": [],
                 "VpcId": {
                     "Ref": "ImageRecognitionVpc"
                 },
-                "TargetType": "ip"
+                "TargetType": "ip",				
+                "Name": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "Default"
+                        ]
+                    ]
+                }
             }
         },
 
