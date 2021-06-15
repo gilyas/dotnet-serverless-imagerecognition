@@ -1,17 +1,16 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Clients/ImageRecognition.BlazorFrontend/ImageRecognition.BlazorFrontend.csproj", "Clients/ImageRecognition.BlazorFrontend/"]
+COPY ["UI/Blazor/ImageRecognition/ImageRecognition.BlazorFrontend.csproj", "UI/Blazor/ImageRecognition/"]
 COPY ["Clients/ImageRecognition.API.Client/ImageRecognition.API.Client.csproj", "Clients/ImageRecognition.API.Client/"]
-COPY ["Communication/ImageRecognition.Communication.Manager/ImageRecognition.Communication.Manager.csproj", "Communication/ImageRecognition.Communication.Manager/"]
 
-RUN dotnet restore "Clients/ImageRecognition.BlazorFrontend/ImageRecognition.BlazorFrontend.csproj"
+RUN dotnet restore "UI/Blazor/ImageRecognition/ImageRecognition.BlazorFrontend.csproj"
 COPY . .
-WORKDIR "/src/Clients/ImageRecognition.BlazorFrontend"
+WORKDIR "/src/UI/Blazor/ImageRecognition"
 RUN dotnet build "ImageRecognition.BlazorFrontend.csproj" -c Release -o /app/build
 
 FROM build AS publish
