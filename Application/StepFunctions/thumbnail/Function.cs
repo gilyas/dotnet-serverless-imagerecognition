@@ -38,6 +38,8 @@ namespace thumbnail
         /// <returns></returns>
         public async Task<ThumbnailInfo> FunctionHandler(Input input, ILambdaContext context)
         {
+            var logger = new ImageRecognitionLogger(input, context);
+
             Dimensions size = input.ExtractedMetadata.Dimensions;
 
             decimal scalingFactor = Math.Min(
@@ -50,10 +52,7 @@ namespace thumbnail
 
             ThumbnailImage image = await GenerateThumbnail(input.Bucket, input.SourceKey, width, height);
 
-            string keyPrefix = input.SourceKey.Substring(0, input.SourceKey.IndexOf("/uploads/"));
-            string orignalPhotoName = input.SourceKey.Substring(input.SourceKey.LastIndexOf("/") + 1);
-
-            string destinationKey = ThumbnailKey(keyPrefix, orignalPhotoName);
+            string destinationKey = input.SourceKey.Replace("uploads", "resized");
 
             using(var inStream = image.thumbnailImage)
             using (var stream = new MemoryStream())
@@ -69,14 +68,10 @@ namespace thumbnail
                     InputStream = stream
                 });
 
+                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo thumbnail created" }, ImageRecognitionLogger.Target.All);
+
                 return new ThumbnailInfo(width, height, destinationKey, input.Bucket);
             }
-        }
-
-
-        private string ThumbnailKey(string keyPrefix, string fileName)
-        {
-            return $"{keyPrefix}/resized/{fileName}";
         }
 
         private async Task<ThumbnailImage> GenerateThumbnail(string s3Bucket, string srcKey, int width, int height)

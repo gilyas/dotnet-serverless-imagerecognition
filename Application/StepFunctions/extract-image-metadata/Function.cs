@@ -34,6 +34,8 @@ namespace extract_image_metadata
         /// <returns></returns>
         public async Task<ImageMetadata> FunctionHandler(ExecutionInput state, ILambdaContext context)
         {
+            var logger = new ImageRecognitionLogger(state, context);
+
             string srcKey = WebUtility.UrlDecode(state.SourceKey);
             var tmpPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(srcKey));
             try
@@ -56,6 +58,8 @@ namespace extract_image_metadata
                         metadata.Format = format.Name;
                     }
                 }
+
+                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo metadata extracted succesfully" }, ImageRecognitionLogger.Target.All);
 
                 return metadata;
             }

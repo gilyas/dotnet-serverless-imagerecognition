@@ -2,11 +2,10 @@ FROM public.ecr.aws/lambda/dotnet:5.0 AS base
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
 WORKDIR /src
-COPY ["s3Trigger/s3Trigger.csproj", "s3Trigger/"]
-RUN dotnet restore "s3Trigger/s3Trigger.csproj"
-
-WORKDIR "/src/s3Trigger"
-COPY "s3Trigger/" .
+COPY ["s3Trigger.csproj", "."]
+RUN dotnet restore "./s3Trigger.csproj"
+COPY . .
+WORKDIR "/src/."
 RUN dotnet build "s3Trigger.csproj" --configuration Release --output /app/build
 
 FROM build AS publish
