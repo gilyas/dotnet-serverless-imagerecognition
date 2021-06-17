@@ -258,7 +258,7 @@
 		        "Artifacts" : {
 					"Type" : "CODEPIPELINE"
 		        },
-		        "Name"      : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-Blazer" ] ]},
+		        "Name"      : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-Blazor" ] ]},
 		        "ServiceRole" : { "Ref" : "CodeBuildRole" },
                 "Environment" : {
 					"ComputeType" : "BUILD_GENERAL1_MEDIUM",
@@ -547,10 +547,10 @@
 						]
 					},
 					{
-						"Name" : "ImageRecognition-BlazerFrontend",
+						"Name" : "ImageRecognition-BlazorFrontend",
                         "Actions" : [
 							{
-								"Name" : "Build-BlazerFrontend",
+								"Name" : "Build-BlazorFrontend",
 								"ActionTypeId" : {
 									"Category" : "Build",
                                     "Provider" : "CodeBuild",
@@ -564,7 +564,7 @@
 								],
                                 "OutputArtifacts" : [
 									{
-										"Name" : "ImageRecognitionBlazerBundle"
+										"Name" : "ImageRecognitionBlazorBundle"
 									}
 								],
                                 "Configuration" : {
@@ -587,7 +587,7 @@
 								],
 								"Configuration" : {
 									"ActionMode" : "CREATE_UPDATE",
-									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ECSBlazerService" ] ]},
+									"StackName"  : {"Fn::Join" : [ "", [{ "Ref" : "AWS::StackName" }, "-ECSFrontend" ] ]},
 									"Capabilities" : "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
 									"RoleArn" : {"Fn::GetAtt" : [ "CloudFormationRole", "Arn"]},
 									"TemplatePath" : "TheSource::Application/UI/Blazor/ImageRecognition/ECS-Service.template"
@@ -595,7 +595,7 @@
                                 "RunOrder" : 2
 							},
 							{
-								"Name" : "Deploy-BlazerFrontend",
+								"Name" : "Deploy-BlazorFrontend",
                                 "ActionTypeId" : {
 									"Category" : "Deploy",
                                     "Provider" : "ECS",
@@ -604,7 +604,7 @@
 								},
                                 "InputArtifacts" : [
 									{
-										"Name" : "ImageRecognitionBlazerBundle"
+										"Name" : "ImageRecognitionBlazorBundle"
 									}
 								],
                                 "Configuration" : {

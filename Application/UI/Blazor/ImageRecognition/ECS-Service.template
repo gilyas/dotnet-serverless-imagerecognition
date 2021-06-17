@@ -51,7 +51,12 @@
         "TargetGroupArn": {
             "Type": "AWS::SSM::Parameter::Value<String>",
             "Default": "/ImageRecognition/TargetGroupArn"
-        }
+        },
+
+        "ApplicationLoadBalancerHost" : {
+		    "Type" : "AWS::SSM::Parameter::Value<String>",
+            "Default" : "/ImageRecognition/LoadBalancerHost"
+		}
 
     },
     "Resources": {
@@ -211,5 +216,10 @@
         }
 
     },
-    "Outputs": {}
+    "Outputs": {
+        "ApplicationEndpoint" : {
+		    "Description" : "Application endpoint URL for Prod environment",
+		    "Value" : { "Fn::Sub" : "${ApplicationLoadBalancerHost}" }
+	        }
+    }
 }
