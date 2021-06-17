@@ -105,9 +105,10 @@ The web front-end for the application will retrieve the details of the user pool
 1. In the login page, click on "Create account"
    
 2. Register an account by following the sign up instructions
+   
    ![Register new user](/Images/app-signup.PNG)
 
-4. After confirming the account, sign in
+3. After confirming the account, sign in
 
 ### Album List
 1. create albums using the "Add a new album"
