@@ -12,6 +12,8 @@ The Image Recognition sample application demonstrates:
 
 This repository contains sample code for all the Lambda functions depicted in the diagram below as well as an AWS CloudFormation template for creating the functions and related resources. There is also a test web app that you can run to interact with the backend.
 
+![High level architecture diagram](/Images/ImageRecognitionArchitecture.png)
+
 Following the instructions in this sample you will gain experience in deploying to and using the following AWS services, with the tools you are already familiar with - namely Visual Studio and AWS extensions for the dotnet CLI:
 
 * Amazon Cognito
@@ -21,8 +23,6 @@ Following the instructions in this sample you will gain experience in deploying 
 * AWS Lambda
 * AWS Step Functions
 * AWS Systems Manager
-
-![High level architecture diagram](/Images/ImageRecognitionArchitecture.png)
 
 # Walkthrough of the architecture
 1. An image is uploaded to the PhotoRepo S3 bucket under the private/{userid}/uploads prefix
@@ -39,6 +39,7 @@ Following the instructions in this sample you will gain experience in deploying 
 Follow these instructions to deploy the application (both backend and frontend):
 1. Fork this repository in your GitHub account.
 2. Click Launch Stack to launch the template in your account:
+   
     [![Launch image recognition with CloudFormation](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=image-recognition&templateURL=https://github.com/sagulati/dotnet-serverless-imagerecognition/blob/main/Application/CloudFormationTemplates/imagerecognition-pipeline.template)
 
     > In the last page of the wizard, make sure to click the checkboxes to accept:
@@ -104,21 +105,21 @@ The web front-end for the application will retrieve the details of the user pool
 1. In the login page, click on "Create account"
    
 2. Register an account by following the sign up instructions
-   ![Register new user](/Images/app-signup.png)
+   ![Register new user](/Images/app-signup.PNG)
 
 4. After confirming the account, sign in
 
 ### Album List
 1. create albums using the "Add a new album"
-   ![create album](/Images/app-create-album.png)
+   ![create album](/Images/app-create-album.PNG)
 
 ### Photo gallery
 1. Click into an album you created
 1. Upload a photo
 2. You can follow the Step Functions execution link to review the details of the workflow execution Below is the diagram of the state machine being executed every time a new image is uploaded (you can explore this in the Step Functions Console):
-   ![step function execution](/Images/step-function-execution.png)
+   ![step function execution](/Images/step-function-execution.PNG)
 3. When the processing finishes, the photo and extracted information is added to the display
-   ![create album](/Images/photo-analyzed.png)
+   ![create album](/Images/photo-analyzed.PNG)
 
 # Cleaning Up the Application Resources
 To remove all resources created by this example, do the following:
