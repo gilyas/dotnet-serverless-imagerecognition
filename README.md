@@ -1,4 +1,4 @@
-# .NET Serverless Reference Architecture: Building End-to-End Serverless .NET Applications on AWS
+# Serverless Reference Architecture: Building End-to-End Serverless .NET Applications on AWS
 The Image Recognition application illustrates modern, serverless, .NET application on AWS. It uses AWS SDK for .NET to work with AWS services from within application code, as well as tools from AWS to integrate with Visual Studio (on Windows) and the dotnet CLI (on Windows, macOS, and Linux) to make working with serverless application development on AWS easy and convenient.
 
 Image recognition is an application that enables registered and signed-in users to upload and organize photos in Albums. After the  photo is submitted, the backend workflow processes photos and extracts metadata from the image such as geolocation, size/format, time, etc. It then uses image recognition to tag objects in the photo. In parallel, it also produces a thumbnail of the photo.

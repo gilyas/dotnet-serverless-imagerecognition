@@ -9,10 +9,13 @@
     "profile"     : "",
     "region"      : "",
     "configuration" : "Release",
-    "framework"     : "netcoreapp2.1",
-    "s3-prefix"     : "ImageRecognition.Communication.Functions/",
+    "package-type": "image",
+    "function-memory-size": 256,
+    "function-timeout": 30,
+    "image-command": "ImageRecognition.Communication.Functions::ImageRecognition.Communication.Functions.Functions::OnConnect",
+    "docker-host-build-output-dir": "./bin/Release/net5.0/linux-x64/publish",
     "template"      : "serverless.template",
     "template-parameters" : "",
     "stack-name"          : "ImageRecognitionCommunication",
-    "s3-bucket"           : "cm-artifacts-us-west-2"
+    "s3-bucket"           : ""
 }
