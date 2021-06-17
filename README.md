@@ -49,7 +49,7 @@ Follow these instructions to deploy the application (both backend and frontend):
       1. Create [personal access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) to use in place of a password.
       2. Add GitHub repository OAuth token parameter to GitHubToken
 
-    ![Cloudformation stack parameters](./images/cloudformation-parameters.png)
+    ![Cloudformation stack parameters](Images/cloudformation-parameters.png)
 
 2. Click Next and Next.
     > In the last page of the wizard, make sure to click the checkboxes to accept:
