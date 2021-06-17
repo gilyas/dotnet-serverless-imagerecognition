@@ -38,10 +38,20 @@ Following the instructions in this sample you will gain experience in deploying 
 # How to deploy
 Follow these instructions to deploy the application (both backend and frontend):
 1. Fork this repository in your GitHub account.
-2. Click Launch Stack to launch the template in your account:
+2. Click Launch Stack to launch the template in your account and then click Next.
    
-    [![Launch image recognition with CloudFormation](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=image-recognition&templateURL=https://github.com/sagulati/dotnet-serverless-imagerecognition/blob/main/Application/CloudFormationTemplates/imagerecognition-pipeline.template)
+    [![Launch image recognition with CloudFormation](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=image-recognition&templateURL=https://s3.us-east-2.amazonaws.com/cf-templates-hfjug9eapsxw-us-east-2/2021168Ym4-imagerecognition-pipeline.template)
 
+1. In the parameters section 
+   1. Add Stack name as "ImageRecognition".
+   2. Change the GitHubOwner to your account.
+   3. Grant AWS CodePipeline access to your GitHub repository. 
+      1. Create [personal access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) to use in place of a password.
+      2. Add GitHub repository OAuth token parameter to GitHubToken
+
+    ![Cloudformation stack parameters](./images/cloudformation-parameters.png)
+
+2. Click Next and Next.
     > In the last page of the wizard, make sure to click the checkboxes to accept:
     > 
     > * I acknowledge that AWS CloudFormation might create IAM resources.
