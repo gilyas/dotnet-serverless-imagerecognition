@@ -117,8 +117,10 @@ The web front-end for the application will retrieve the details of the user pool
 1. Click into an album you created
 1. Upload a photo
 2. You can follow the Step Functions execution link to review the details of the workflow execution Below is the diagram of the state machine being executed every time a new image is uploaded (you can explore this in the Step Functions Console):
+   
    ![step function execution](/Images/step-function-execution.PNG)
 3. When the processing finishes, the photo and extracted information is added to the display
+   
    ![create album](/Images/photo-analyzed.PNG)
 
 # Cleaning Up the Application Resources
