@@ -4,11 +4,10 @@ The Image Recognition application illustrates modern, serverless, .NET applicati
 Image recognition is an application that enables registered and signed-in users to upload and organize photos in Albums. After the  photo is submitted, the backend workflow processes photos and extracts metadata from the image such as geolocation, size/format, time, etc. It then uses image recognition to tag objects in the photo. In parallel, it also produces a thumbnail of the photo.
 
 The Image Recognition sample application demonstrates:
-* How to use of AWS Step Functions to orchestrate a serverless processing workflow built in .NET using AWS Lambda, Amazon S3, Amazon DynamoDB and Amazon Rekognition. 
 * Building ASP.NET Web API project using JWT tokens vended by Cognito to handle authentication. The project is hosted in AWS Lambda using Lambda Container support and the AWS .NET tooling that simplifies using .NET5 Container with Lambda.
-* Example of doing aggregation in Amazon Dynamo DB using AWS Lambda.
-* Frontend using ASP.NET new server-side Blazor web framework hosted in ECS using AWS Fargate.
-* Use API Gateway's WebSocket support to connect backend components to the frontend allowing backend systems to easily communicate their status to the user in real time.
+* Building frontend using ASP.NET new server-side Blazor web framework hosted in ECS using AWS Fargate.
+* Using API Gateway's WebSocket support to build realtime two-way communication application. This project connect backend components to the frontend allowing backend systems to easily communicate their status to the user in real time.
+* Using AWS Step Functions to orchestrate a serverless processing workflow built in .NET. This project orchestrate backend using AWS Lambda, Amazon S3, Amazon DynamoDB and Amazon Rekognition.
 
 This repository contains sample code for all the Lambda functions depicted in the diagram below as well as an AWS CloudFormation template for creating the functions and related resources. There is also a test web app that you can run to interact with the backend.
 
