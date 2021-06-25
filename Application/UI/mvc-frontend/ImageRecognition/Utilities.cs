@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageRecognition.Frontend
 {
@@ -11,35 +7,23 @@ namespace ImageRecognition.Frontend
     {
         public static void CopyStream(Stream input, Stream output)
         {
-            byte[] buffer = new byte[8 * 1024];
+            var buffer = new byte[8 * 1024];
             int len;
-            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                output.Write(buffer, 0, len);
-            }
+            while ((len = input.Read(buffer, 0, buffer.Length)) > 0) output.Write(buffer, 0, len);
         }
 
         public static string MakeSafeName(string displayName, int maxSize)
         {
             var builder = new StringBuilder();
-            foreach (char c in displayName)
-            {
+            foreach (var c in displayName)
                 if (char.IsLetterOrDigit(c))
-                {
                     builder.Append(c);
-                }
                 else
-                {
                     builder.Append('-');
-                }
-            }
 
             var name = builder.ToString();
 
-            if (maxSize < name.Length)
-            {
-                name = name.Substring(0, maxSize);
-            }
+            if (maxSize < name.Length) name = name.Substring(0, maxSize);
 
             return name;
         }

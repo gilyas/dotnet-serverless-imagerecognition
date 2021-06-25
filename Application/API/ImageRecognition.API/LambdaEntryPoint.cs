@@ -1,6 +1,4 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Amazon.Lambda.AspNetCoreServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -8,10 +6,9 @@ using Microsoft.Extensions.Hosting;
 namespace ImageRecognition.API
 {
     /// <summary>
-    /// This class extends from APIGatewayProxyFunction which contains the method FunctionHandlerAsync which is the 
-    /// actual Lambda function entry point. The Lambda handler field should be set to
-    /// 
-    /// ImageRecognition.API::ImageRecognition.API.LambdaEntryPoint::FunctionHandlerAsync
+    ///     This class extends from APIGatewayProxyFunction which contains the method FunctionHandlerAsync which is the
+    ///     actual Lambda function entry point. The Lambda handler field should be set to
+    ///     ImageRecognition.API::ImageRecognition.API.LambdaEntryPoint::FunctionHandlerAsync
     /// </summary>
     public class LambdaEntryPoint :
 
@@ -25,12 +22,11 @@ namespace ImageRecognition.API
         // 
         // Note: When using the AWS::Serverless::Function resource with an event type of "HttpApi" then payload version 2.0
         // will be the default and you must make Amazon.Lambda.AspNetCoreServer.APIGatewayHttpApiV2ProxyFunction the base class.
-
-        Amazon.Lambda.AspNetCoreServer.ApplicationLoadBalancerFunction
+        ApplicationLoadBalancerFunction
     {
         /// <summary>
-        /// The builder has configuration, logging and Amazon API Gateway already configured. The startup class
-        /// needs to be configured in this method using the UseStartup<>() method.
+        ///     The builder has configuration, logging and Amazon API Gateway already configured. The startup class
+        ///     needs to be configured in this method using the UseStartup<>() method.
         /// </summary>
         /// <param name="builder"></param>
         protected override void Init(IWebHostBuilder builder)
@@ -41,10 +37,9 @@ namespace ImageRecognition.API
         }
 
         /// <summary>
-        /// Use this override to customize the services registered with the IHostBuilder. 
-        /// 
-        /// It is recommended not to call ConfigureWebHostDefaults to configure the IWebHostBuilder inside this method.
-        /// Instead customize the IWebHostBuilder in the Init(IWebHostBuilder) overload.
+        ///     Use this override to customize the services registered with the IHostBuilder.
+        ///     It is recommended not to call ConfigureWebHostDefaults to configure the IWebHostBuilder inside this method.
+        ///     Instead customize the IWebHostBuilder in the Init(IWebHostBuilder) overload.
         /// </summary>
         /// <param name="builder"></param>
         protected override void Init(IHostBuilder builder)

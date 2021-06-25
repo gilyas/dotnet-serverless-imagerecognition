@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ImageRecognition.Frontend.Models
 {
@@ -14,7 +11,7 @@ namespace ImageRecognition.Frontend.Models
         public override string ToString()
         {
             return $"{Latitude.D}°{Math.Round(Latitude.M)}'{Math.Round(Latitude.S)}''{Latitude.Direction}" +
-                $" {Longtitude.D}°{Math.Round(Longtitude.M)}'{Math.Round(Longtitude.S)}''{Longtitude.Direction}";
+                   $" {Longtitude.D}°{Math.Round(Longtitude.M)}'{Math.Round(Longtitude.S)}''{Longtitude.Direction}";
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -7,11 +11,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ImageRecognition.API.Controllers
 {
@@ -20,22 +19,21 @@ namespace ImageRecognition.API.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PhotoController : Controller
     {
-
-        AppOptions _appOptions;
-        IAmazonDynamoDB _ddbClient;
-        IAmazonS3 _s3Client;
-        DynamoDBContext _ddbContext;
+        private readonly AppOptions _appOptions;
+        private readonly IAmazonDynamoDB _ddbClient;
+        private readonly DynamoDBContext _ddbContext;
+        private readonly IAmazonS3 _s3Client;
 
         public PhotoController(IOptions<AppOptions> appOptions, IAmazonDynamoDB dbClient, IAmazonS3 s3Client)
         {
             _appOptions = appOptions.Value;
             _ddbClient = dbClient;
             _s3Client = s3Client;
-            _ddbContext = new DynamoDBContext(this._ddbClient);
+            _ddbContext = new DynamoDBContext(_ddbClient);
         }
 
         /// <summary>
-        /// Gets all photos by album Id.
+        ///     Gets all photos by album Id.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -44,17 +42,15 @@ namespace ImageRecognition.API.Controllers
         [ProducesResponseType(403)]
         public async Task<JsonResult> GetPhotosByAlbum(string albumId)
         {
-            var userId = Utilities.GetUsername(this.HttpContext.User);
+            var userId = Utilities.GetUsername(HttpContext.User);
 
             var photos = new List<Photo>();
 
-            var photoQuery = this._ddbContext.QueryAsync<Photo>(albumId, new DynamoDBOperationConfig { IndexName = "albumID-uploadTime-index" });
+            var photoQuery = _ddbContext.QueryAsync<Photo>(albumId,
+                new DynamoDBOperationConfig {IndexName = "albumID-uploadTime-index"});
             foreach (var photo in await photoQuery.GetRemainingAsync().ConfigureAwait(false))
             {
-                if (photo.Owner != userId)
-                {
-                    continue;
-                }
+                if (photo.Owner != userId) continue;
 
                 photo.Thumbnail ??= new PhotoImage();
                 photo.FullSize ??= new PhotoImage();
@@ -80,7 +76,7 @@ namespace ImageRecognition.API.Controllers
 
 
         /// <summary>
-        /// Add photo to album.
+        ///     Add photo to album.
         /// </summary>
         /// <param name="albumId">The album id to use to add the photo.</param>
         /// <param name="name">photo name.</param>
@@ -90,14 +86,15 @@ namespace ImageRecognition.API.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> AddPhoto([FromQuery] string albumId,[FromQuery] string name, [FromQuery] string sourceImageUrl)
+        public async Task<IActionResult> AddPhoto([FromQuery] string albumId, [FromQuery] string name,
+            [FromQuery] string sourceImageUrl)
         {
-            var userId = Utilities.GetUsername(this.HttpContext.User);
+            var userId = Utilities.GetUsername(HttpContext.User);
             var tempFile = Path.GetTempFileName();
 
             try
             {
-                var photoId = name + "-" + Guid.NewGuid().ToString();
+                var photoId = name + "-" + Guid.NewGuid();
 
                 var photo = new Photo
                 {
@@ -111,32 +108,28 @@ namespace ImageRecognition.API.Controllers
                     UploadTime = DateTime.UtcNow
                 };
 
-                await this._ddbContext.SaveAsync(photo).ConfigureAwait(false);
+                await _ddbContext.SaveAsync(photo).ConfigureAwait(false);
 
-                using (var fileStream = System.IO.File.OpenWrite(tempFile))
+                await using (var fileStream = System.IO.File.OpenWrite(tempFile))
                 {
                     await Utilities.CopyStreamAsync(sourceImageUrl, fileStream);
                 }
 
                 var putRequest = new PutObjectRequest
                 {
-                    BucketName = this._appOptions.PhotoStorageBucket,
+                    BucketName = _appOptions.PhotoStorageBucket,
                     Key = $"private/uploads/{userId}/{photoId}",
                     FilePath = tempFile
                 };
 
-                await this._s3Client.PutObjectAsync(putRequest).ConfigureAwait(false);
+                await _s3Client.PutObjectAsync(putRequest).ConfigureAwait(false);
 
                 return Ok();
             }
             finally
             {
-                if (System.IO.File.Exists(tempFile))
-                {
-                    System.IO.File.Delete(tempFile);
-                }
+                if (System.IO.File.Exists(tempFile)) System.IO.File.Delete(tempFile);
             }
-
         }
     }
 }

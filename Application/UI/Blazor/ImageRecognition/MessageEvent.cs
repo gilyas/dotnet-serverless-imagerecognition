@@ -1,22 +1,15 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ImageRecognition.BlazorFrontend
+﻿namespace ImageRecognition.BlazorFrontend
 {
     public class MessageEvent
     {
         public MessageEvent()
         {
-
         }
 
         public MessageEvent(string targetUser, string resourceId)
         {
-            this.TargetUser = targetUser;
-            this.ResourceId = resourceId;
+            TargetUser = targetUser;
+            ResourceId = resourceId;
         }
 
 

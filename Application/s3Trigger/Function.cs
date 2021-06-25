@@ -1,3 +1,8 @@
+using System;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
@@ -8,13 +13,6 @@ using Amazon.StepFunctions;
 using Amazon.StepFunctions.Model;
 using Amazon.Util;
 using Newtonsoft.Json;
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
@@ -23,44 +21,44 @@ namespace s3Trigger
 {
     public class Function
     {
-        private string StateMachineArn { get; set; }
-
         private const string STATE_MACHINE_ARN = "STATE_MACHINE_ARN";
         private const string PHOTO_TABLE = "PHOTO_TABLE";
 
-        private static IAmazonDynamoDB _ddbClient = new AmazonDynamoDBClient();
-        private static IAmazonStepFunctions _stepClient = new AmazonStepFunctionsClient();
+        private static readonly IAmazonDynamoDB _ddbClient = new AmazonDynamoDBClient();
+        private static readonly IAmazonStepFunctions _stepClient = new AmazonStepFunctionsClient();
 
-        DynamoDBContext _ddbContext;
+        private readonly DynamoDBContext _ddbContext;
 
         public Function()
         {
             StateMachineArn = Environment.GetEnvironmentVariable(STATE_MACHINE_ARN);
-            
+
             AWSConfigsDynamoDB.Context
                 .AddMapping(new TypeMapping(typeof(Photo), Environment.GetEnvironmentVariable(PHOTO_TABLE)));
-            
+
             _ddbContext = new DynamoDBContext(_ddbClient);
         }
 
+        private string StateMachineArn { get; }
+
         /// <summary>
-        /// A simple function that takes a string and returns both the upper and lower case version of the string.
+        ///     A simple function that takes a string and returns both the upper and lower case version of the string.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
         public async Task FunctionHandler(S3Event evnt, ILambdaContext context)
         {
-            string bucket = evnt.Records[0].S3.Bucket.Name;
-            string key = WebUtility.UrlDecode(evnt.Records[0].S3.Object.Key);
+            var bucket = evnt.Records[0].S3.Bucket.Name;
+            var key = WebUtility.UrlDecode(evnt.Records[0].S3.Object.Key);
 
             Console.WriteLine(bucket);
             Console.WriteLine(key);
 
-            string[] photoData = key.Split("/").Reverse().Take(2).ToArray();
+            var photoData = key.Split("/").Reverse().Take(2).ToArray();
 
-            string photoId = photoData[0];
-            string userId = photoData[1];
+            var photoId = photoData[0];
+            var userId = photoData[1];
 
             Console.WriteLine(photoId);
 
@@ -80,7 +78,7 @@ namespace s3Trigger
                 Input = JsonConvert.SerializeObject(input)
             }).ConfigureAwait(false);
 
-            Photo photo = new Photo
+            var photo = new Photo
             {
                 PhotoId = photoId,
                 SfnExecutionArn = stepResponse.ExecutionArn,
@@ -88,30 +86,21 @@ namespace s3Trigger
                 UpdatedDate = DateTime.UtcNow
             };
 
-            await this._ddbContext.SaveAsync(photo).ConfigureAwait(false);
+            await _ddbContext.SaveAsync(photo).ConfigureAwait(false);
         }
 
         public static string MakeSafeName(string displayName, int maxSize)
         {
             var builder = new StringBuilder();
-            foreach (char c in displayName)
-            {
+            foreach (var c in displayName)
                 if (char.IsLetterOrDigit(c))
-                {
                     builder.Append(c);
-                }
                 else
-                {
                     builder.Append('-');
-                }
-            }
 
             var name = builder.ToString();
 
-            if (maxSize < name.Length)
-            {
-                name = name.Substring(0, maxSize);
-            }
+            if (maxSize < name.Length) name = name.Substring(0, maxSize);
 
             return name;
         }

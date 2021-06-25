@@ -1,55 +1,49 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
-using Amazon.Lambda.Core;
-using Amazon.Lambda.APIGatewayEvents;
-
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.Json;
+using Amazon.Runtime;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System.Security.Claims;
-
-using Microsoft.Extensions.Configuration;
-using Amazon.Extensions.Configuration.SystemsManager;
+using Microsoft.IdentityModel.Tokens;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
+[assembly: LambdaSerializer(typeof(JsonSerializer))]
 
 namespace ImageRecognition.Communication.Functions
 {
     public class Functions
     {
-        const string AUTHORIZATION_HEADER = "Authorization";
-        const string BEARER_PREFIX = "Bearer";
-        const string TABLE_NAME_ENV = "COMMUNICATION_TABLE";
+        private const string AUTHORIZATION_HEADER = "Authorization";
+        private const string BEARER_PREFIX = "Bearer";
+        private const string TABLE_NAME_ENV = "COMMUNICATION_TABLE";
+        private TokenValidationParameters _jwtValidationParameters;
 
-        CommunicationManager _manager;
-        TokenValidationParameters _jwtValidationParameters;
+        private readonly CommunicationManager _manager;
 
         /// <summary>
-        /// Default constructor that Lambda will invoke.
+        ///     Default constructor that Lambda will invoke.
         /// </summary>
         public Functions()
         {
-            _manager = CommunicationManager.CreateManager(System.Environment.GetEnvironmentVariable(TABLE_NAME_ENV));
+            _manager = CommunicationManager.CreateManager(Environment.GetEnvironmentVariable(TABLE_NAME_ENV));
         }
 
 
         /// <summary>
-        /// Verify JWT token in Authorization header and if valid allow connection.
+        ///     Verify JWT token in Authorization header and if valid allow connection.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> OnConnect(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            if(this._jwtValidationParameters == null)
-            {
-                this._jwtValidationParameters = await CreateTokenValidationParameters(context);
-            }
+            if (_jwtValidationParameters == null)
+                _jwtValidationParameters = await CreateTokenValidationParameters(context);
 
             try
             {
@@ -65,23 +59,24 @@ namespace ImageRecognition.Communication.Functions
                     context.Logger.LogLine("Error, no username claim found in JWT token");
                     return new APIGatewayProxyResponse
                     {
-                        StatusCode = (int)HttpStatusCode.Unauthorized
+                        StatusCode = (int) HttpStatusCode.Unauthorized
                     };
                 }
 
-                context.Logger.LogLine($"Login with connection id: {request.RequestContext.ConnectionId}, Endpoint: {endpoint}, Username: {username}");
+                context.Logger.LogLine(
+                    $"Login with connection id: {request.RequestContext.ConnectionId}, Endpoint: {endpoint}, Username: {username}");
                 await _manager.LoginAsync(request.RequestContext.ConnectionId, endpoint, username);
 
                 return new APIGatewayProxyResponse
                 {
-                    StatusCode = (int)HttpStatusCode.OK
+                    StatusCode = (int) HttpStatusCode.OK
                 };
             }
             catch
             {
                 return new APIGatewayProxyResponse
                 {
-                    StatusCode = (int)HttpStatusCode.Unauthorized
+                    StatusCode = (int) HttpStatusCode.Unauthorized
                 };
             }
         }
@@ -94,7 +89,7 @@ namespace ImageRecognition.Communication.Functions
 
             var response = new APIGatewayProxyResponse
             {
-                StatusCode = (int)HttpStatusCode.OK
+                StatusCode = (int) HttpStatusCode.OK
             };
 
             return response;
@@ -110,19 +105,19 @@ namespace ImageRecognition.Communication.Functions
             }
 
             if (authorization.StartsWith(BEARER_PREFIX, StringComparison.OrdinalIgnoreCase))
-            {
                 authorization = authorization.Substring(BEARER_PREFIX.Length + 1);
-            }
 
             ClaimsPrincipal user;
             try
             {
                 SecurityToken validatedToken;
-                user = new JwtSecurityTokenHandler().ValidateToken(authorization, this._jwtValidationParameters, out validatedToken);
+                user = new JwtSecurityTokenHandler().ValidateToken(authorization, _jwtValidationParameters,
+                    out validatedToken);
 
                 if (DateTime.UtcNow < validatedToken.ValidFrom || validatedToken.ValidTo < DateTime.UtcNow)
                 {
-                    Console.WriteLine($"Error, JWT Token expired. Token was valid from {validatedToken.ValidFrom} to {validatedToken.ValidTo}");
+                    Console.WriteLine(
+                        $"Error, JWT Token expired. Token was valid from {validatedToken.ValidFrom} to {validatedToken.ValidTo}");
                     throw new Exception("JWT Token expired");
                 }
             }
@@ -140,21 +135,20 @@ namespace ImageRecognition.Communication.Functions
         {
             context.Logger.LogLine("Loading user pool configuration from SSM Parameter Store.");
             var configuration = new ConfigurationBuilder()
-                    .AddSystemsManager("/ImageRecognition")
-                    .Build();
+                .AddSystemsManager("/ImageRecognition")
+                .Build();
 
             var region = configuration["AWS:Region"];
-            if (string.IsNullOrEmpty(region))
-            {
-                region = Amazon.Runtime.FallbackRegionFactory.GetRegionEndpoint().SystemName;
-            }
+            if (string.IsNullOrEmpty(region)) region = FallbackRegionFactory.GetRegionEndpoint().SystemName;
             var userPoolId = configuration["AWS:UserPoolId"];
             var userPoolClientId = configuration["AWS:UserPoolClientId"];
 
             context.Logger.LogLine("Configuring JWT Validation parameters");
 
-            var openIdConfigurationUrl = $"https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
-            var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConfigurationUrl, new OpenIdConnectConfigurationRetriever());
+            var openIdConfigurationUrl =
+                $"https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
+            var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConfigurationUrl,
+                new OpenIdConnectConfigurationRetriever());
 
             context.Logger.LogLine($"Loading open id configuration from {openIdConfigurationUrl}");
             var openIdConfig = await configurationManager.GetConfigurationAsync();
@@ -167,7 +161,7 @@ namespace ImageRecognition.Communication.Functions
             return new TokenValidationParameters
             {
                 ValidIssuer = validIssuer,
-                ValidAudiences = new[] { userPoolClientId },
+                ValidAudiences = new[] {userPoolClientId},
                 IssuerSigningKeys = openIdConfig.SigningKeys
             };
         }

@@ -1,4 +1,4 @@
 {
-    "configuration" : "Release",
-    "docker-build-working-dir" : ""
+  "configuration": "Release",
+  "docker-build-working-dir": ""
 }

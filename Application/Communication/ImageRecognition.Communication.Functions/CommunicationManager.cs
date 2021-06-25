@@ -1,35 +1,26 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Amazon;
-using Amazon.Runtime;
-
-using Amazon.ApiGatewayManagementApi;
-using Amazon.ApiGatewayManagementApi.Model;
-
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using Newtonsoft.Json;
-using System.IO;
-using System.Text;
+using Amazon.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace ImageRecognition.Communication.Functions
 {
     public class CommunicationManager
     {
-        const string ConnectionIdField = "connectionId";
-        const string UsernameField = "username";
-        const string EndpointField = "endpoint";
-        const string LoginDateField = "logindate";
+        private const string ConnectionIdField = "connectionId";
+        private const string UsernameField = "username";
+        private const string EndpointField = "endpoint";
+        private const string LoginDateField = "logindate";
+
+        private MemoryCache _connectionsCache = new(new MemoryCacheOptions());
+        private readonly IAmazonDynamoDB _ddbClient;
 
 
-        string _ddbTableName;
-        IAmazonDynamoDB _ddbClient;
-
-        MemoryCache _connectionsCache = new MemoryCache(new MemoryCacheOptions());
+        private readonly string _ddbTableName;
 
         private CommunicationManager(AWSCredentials awsCredentials, RegionEndpoint region, string ddbTableName)
         {
@@ -38,14 +29,16 @@ namespace ImageRecognition.Communication.Functions
         }
 
 
-        public static CommunicationManager CreateManager(AWSCredentials awsCredentials, RegionEndpoint region, string ddbTableName)
+        public static CommunicationManager CreateManager(AWSCredentials awsCredentials, RegionEndpoint region,
+            string ddbTableName)
         {
-            return new CommunicationManager(awsCredentials, region, ddbTableName);
+            return new(awsCredentials, region, ddbTableName);
         }
 
         public static CommunicationManager CreateManager(string ddbTableName)
         {
-            return CreateManager(FallbackCredentialsFactory.GetCredentials(), FallbackRegionFactory.GetRegionEndpoint(), ddbTableName);
+            return CreateManager(FallbackCredentialsFactory.GetCredentials(), FallbackRegionFactory.GetRegionEndpoint(),
+                ddbTableName);
         }
 
 
@@ -58,12 +51,12 @@ namespace ImageRecognition.Communication.Functions
             {
                 TableName = _ddbTableName,
                 Item = new Dictionary<string, AttributeValue>
-                    {
-                        {ConnectionIdField, new AttributeValue{ S = connectionId}},
-                        {EndpointField, new AttributeValue{ S = endpoint}},
-                        {UsernameField, new AttributeValue{ S = username}},
-                        {LoginDateField, new AttributeValue{S = DateTime.UtcNow.ToString()}}
-                    }
+                {
+                    {ConnectionIdField, new AttributeValue {S = connectionId}},
+                    {EndpointField, new AttributeValue {S = endpoint}},
+                    {UsernameField, new AttributeValue {S = username}},
+                    {LoginDateField, new AttributeValue {S = DateTime.UtcNow.ToString()}}
+                }
             };
 
             await _ddbClient.PutItemAsync(putRequest);
@@ -79,7 +72,7 @@ namespace ImageRecognition.Communication.Functions
                 TableName = _ddbTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
-                    {ConnectionIdField, new AttributeValue{ S = connectionId}}
+                    {ConnectionIdField, new AttributeValue {S = connectionId}}
                 }
             };
 

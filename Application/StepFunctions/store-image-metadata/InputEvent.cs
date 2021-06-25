@@ -1,9 +1,5 @@
-using Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Common;
 
 namespace store_image_metadata
 {
@@ -17,5 +13,4 @@ namespace store_image_metadata
     public record Label (string Name);
 
     public record Thumbnail(decimal width, decimal height, string s3key, string s3Bucket);
-
 }

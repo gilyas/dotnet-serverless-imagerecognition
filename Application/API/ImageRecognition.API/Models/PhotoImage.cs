@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ImageRecognition.API.Models
+﻿namespace ImageRecognition.API.Models
 {
     public class PhotoImage
     {

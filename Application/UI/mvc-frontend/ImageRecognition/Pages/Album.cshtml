@@ -18,14 +18,14 @@
                                    asp-for="PhotoSourceImages"
                                    aria-label="Upload photo"
                                    required multiple
-                                   style="height:auto"
-                                   accept="image/*" />
+                                   style="height: auto"
+                                   accept="image/*"/>
                         </div>
 
                     </div>
                     <div class="row">
                         <div class="col-md-10">
-                            <input type="submit" asp-page-handler="upload" value="Upload Photo" data-progress="Uploading..." class="btn btn-primary" />
+                            <input type="submit" asp-page-handler="upload" value="Upload Photo" data-progress="Uploading..." class="btn btn-primary"/>
                         </div>
                     </div>
                 </form>
@@ -59,9 +59,13 @@
                                 </div>
 
                                 <div class="content">
-                                    <div class="meta"><span class="date">Uploaded: @photo.UploadTime</span></div>
+                                    <div class="meta">
+                                        <span class="date">Uploaded: @photo.UploadTime</span>
+                                    </div>
                                     <div class="description">
-                                        <p><b>Detected labels:</b></p>
+                                        <p>
+                                            <b>Detected labels:</b>
+                                        </p>
                                         @if (photo?.ObjectDetected != null)
                                         {
                                             @foreach (var label in photo.ObjectDetected)
@@ -72,11 +76,15 @@
                                         <p><b>Image size: </b>@photo.FullSize.Height x @photo.FullSize.Width</p>
                                         @if (photo?.GeoLocation != null)
                                         {
-                                            <p><strong>Geolocation: </strong>@photo.GeoLocation.ToString()</p>
+                                            <p>
+                                                <strong>Geolocation: </strong>@photo.GeoLocation.ToString()
+                                            </p>
                                         }
                                         @if (photo?.ExifModel != null)
                                         {
-                                            <p><strong>Device: </strong>@photo.ExifMake @photo.ExifModel</p>
+                                            <p>
+                                                <strong>Device: </strong>@photo.ExifMake @photo.ExifModel
+                                            </p>
                                         }
                                     </div>
                                 </div>

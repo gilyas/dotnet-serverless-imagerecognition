@@ -8,21 +8,23 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Util;
 using Common;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
 namespace store_image_metadata
 {
     public class Function
     {
         private const string PHOTO_TABLE = "PHOTO_TABLE";
-        private static IAmazonDynamoDB _ddbClient = new AmazonDynamoDBClient();
-        DynamoDBContext _ddbContext;
+        private static readonly IAmazonDynamoDB _ddbClient = new AmazonDynamoDBClient();
+        private readonly DynamoDBContext _ddbContext;
 
-        public Function(){
+        public Function()
+        {
             AWSConfigsDynamoDB.Context
                 .AddMapping(new TypeMapping(typeof(Photo), Environment.GetEnvironmentVariable(PHOTO_TABLE)));
 
@@ -30,7 +32,7 @@ namespace store_image_metadata
         }
 
         /// <summary>
-        /// A simple function that takes a string and returns both the upper and lower case version of the string.
+        ///     A simple function that takes a string and returns both the upper and lower case version of the string.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="context"></param>
@@ -38,10 +40,10 @@ namespace store_image_metadata
         public async Task FunctionHandler(InputEvent input, ILambdaContext context)
         {
             var logger = new ImageRecognitionLogger(input, context);
-            
+
             var thumbnail = JsonSerializer.Deserialize<Thumbnail>(JsonSerializer.Serialize(input.ParallelResults[1]));
 
-            List<Label> labels = JsonSerializer.Deserialize<List<Label>>(JsonSerializer.Serialize(input.ParallelResults[0]));
+            var labels = JsonSerializer.Deserialize<List<Label>>(JsonSerializer.Serialize(input.ParallelResults[0]));
 
             var photoUpdate = new Photo
             {
@@ -51,7 +53,7 @@ namespace store_image_metadata
                 {
                     Key = WebUtility.UrlDecode(input.SourceKey),
                     Width = input.ExtractedMetadata?.Dimensions?.Width,
-                    Height = input.ExtractedMetadata?.Dimensions?.Height,
+                    Height = input.ExtractedMetadata?.Dimensions?.Height
                 },
                 Format = input.ExtractedMetadata?.Format,
                 ExifMake = input.ExtractedMetadata?.ExifMake,
@@ -60,7 +62,7 @@ namespace store_image_metadata
                 {
                     Key = WebUtility.UrlDecode(thumbnail?.s3key),
                     Width = thumbnail?.width,
-                    Height = thumbnail?.height,
+                    Height = thumbnail?.height
                 },
                 ObjectDetected = labels.Select(l => l.Name).ToArray(),
                 GeoLocation = input.ExtractedMetadata?.Geo,
@@ -68,11 +70,14 @@ namespace store_image_metadata
             };
 
             // update photo table.
-            await this._ddbContext.SaveAsync(photoUpdate).ConfigureAwait(false);
+            await _ddbContext.SaveAsync(photoUpdate).ConfigureAwait(false);
 
-            string data = JsonSerializer.Serialize(photoUpdate);
+            var data = JsonSerializer.Serialize(photoUpdate);
 
-            await logger.WriteMessageAsync(new MessageEvent { Message = "Photo recognition metadata stored succesfully", Data = data, CompleteEvent = true }, ImageRecognitionLogger.Target.All);
+            await logger.WriteMessageAsync(
+                new MessageEvent
+                    {Message = "Photo recognition metadata stored succesfully", Data = data, CompleteEvent = true},
+                ImageRecognitionLogger.Target.All);
 
             Console.WriteLine(data);
         }

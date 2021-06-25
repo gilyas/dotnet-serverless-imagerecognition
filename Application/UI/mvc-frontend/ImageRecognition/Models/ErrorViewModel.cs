@@ -1,5 +1,3 @@
-using System;
-
 namespace ImageRecognition.Frontend.Models
 {
     public class ErrorViewModel

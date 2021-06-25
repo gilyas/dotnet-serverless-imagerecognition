@@ -1,12 +1,17 @@
-﻿using Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using Common;
 
 namespace store_image_metadata
 {
-    public enum ProcessingStatus { Pending = 0, Running = 1, Succeeded = 2, Failed = 3, Timed_Out = 4, Aborted = 5 }
+    public enum ProcessingStatus
+    {
+        Pending = 0,
+        Running = 1,
+        Succeeded = 2,
+        Failed = 3,
+        Timed_Out = 4,
+        Aborted = 5
+    }
 
     public class Photo
     {

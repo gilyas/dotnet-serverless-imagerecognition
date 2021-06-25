@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ImageRecognition.API.Models
+﻿namespace ImageRecognition.API.Models
 {
     public class Coordinate
     {
         /// <summary>
-        /// Degree
+        ///     Degree
         /// </summary>
         public decimal D { get; set; }
 
         /// <summary>
-        /// Minute
+        ///     Minute
         /// </summary>
         public decimal M { get; set; }
 
         /// <summary>
-        /// Second
+        ///     Second
         /// </summary>
         public decimal S { get; set; }
 
         /// <summary>
-        /// Direction
+        ///     Direction
         /// </summary>
         public string Direction { get; set; }
-
     }
 }

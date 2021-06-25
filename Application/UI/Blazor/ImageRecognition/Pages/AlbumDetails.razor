@@ -1,7 +1,7 @@
 ﻿@page "/album/{AlbumId}"
 @using ImageRecognition.BlazorFrontend.Models
-@using System.Collections.Generic;
-@using System.Threading;
+@using System.Collections.ObjectModel
+@using System.Threading
 @implements IDisposable
 
 @inject IServiceClientFactory ServiceClientFactory
@@ -18,34 +18,33 @@
             }
             else
             {
-        <div class="simple-form">
-            <div class="col-md-10 form-group">
-                <h3 class="ui header">@AlbumWrapper?.Album.Name</h3>
+                <div class="simple-form">
+                    <div class="col-md-10 form-group">
+                        <h3 class="ui header">@AlbumWrapper?.Album.Name</h3>
 
-                <label class="control-label">Select photos to upload.</label>
-                <InputFile class="form-control form-control-file"
-                           id="files"
-                           aria-label="Upload photo"
-                           required multiple
-                           style="height:auto"
-                           OnChange="OnInputFileChange"
-                           accept=".jpg,.png" />
+                        <label class="control-label">Select photos to upload.</label>
+                        <InputFile class="form-control form-control-file"
+                                   id="files"
+                                   aria-label="Upload photo"
+                                   required multiple
+                                   style="height: auto"
+                                   OnChange="OnInputFileChange"
+                                   accept=".jpg,.png"/>
 
 
-                <button style="margin-top:15px" @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Submit</button>
+                        <button style="margin-top: 15px" @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Submit</button>
 
-                <p style="margin-top:15px">
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
-                    </div><br />
-                    <small>@ProgressMessage</small>
-                </p>
+                        <p style="margin-top: 15px">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="@ProgressStyle" aria-valuenow="@ProgressNow" aria-valuemin="0" aria-valuemax="@ProgressMax"></div>
+                            </div><br/>
+                            <small>@ProgressMessage</small>
+                        </p>
 
-            </div>
-            
-            @*<button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Upload Photo</button>*@
-        </div>
+                    </div>
 
+                    @*<button @onclick="SubmitForm" class="btn btn-primary" disabled="@DisableInput">Upload Photo</button>*@
+                </div>
 
 
                 <div>
@@ -76,9 +75,13 @@
                                     </div>
 
                                     <div class="content">
-                                        <div class="meta"><span class="date">Uploaded: @photo.Photo.UploadTime</span></div>
+                                        <div class="meta">
+                                            <span class="date">Uploaded: @photo.Photo.UploadTime</span>
+                                        </div>
                                         <div class="description">
-                                            <p><b>Detected labels:</b></p>
+                                            <p>
+                                                <b>Detected labels:</b>
+                                            </p>
                                             @if (photo.Photo?.ObjectDetected != null)
                                             {
                                                 @foreach (var label in photo.Photo.ObjectDetected)
@@ -89,11 +92,15 @@
                                             <p><b>Image size: </b>@photo.Photo.FullSize.Height x @photo.Photo.FullSize.Width</p>
                                             @if (photo.Photo?.GeoLocation != null)
                                             {
-                                                <p><strong>Geolocation: </strong>@photo.Photo.GeoLocation.ToString()</p>
+                                                <p>
+                                                    <strong>Geolocation: </strong>@photo.Photo.GeoLocation.ToString()
+                                                </p>
                                             }
                                             @if (photo.Photo?.ExifModel != null)
                                             {
-                                                <p><strong>Device: </strong>@photo.Photo.ExifMake @photo.Photo.ExifModel</p>
+                                                <p>
+                                                    <strong>Device: </strong>@photo.Photo.ExifMake @photo.Photo.ExifModel
+                                                </p>
                                             }
                                         </div>
                                     </div>
@@ -107,7 +114,7 @@
     </div>
 </div>
 
-@if (!this.Loaded)
+@if (!Loaded)
 {
     <p>
         <div class="d-flex align-items-center">
@@ -119,9 +126,9 @@
 
 @code {
     bool Loaded { get; set; }
-    System.Collections.ObjectModel.ObservableCollection<PhotoWrapper> AlbumPhotos = new System.Collections.ObjectModel.ObservableCollection<PhotoWrapper>();
+    readonly ObservableCollection<PhotoWrapper> AlbumPhotos = new();
 
-    private List<IBrowserFile> loadedFiles = new();
+    private readonly List<IBrowserFile> loadedFiles = new();
 
     PhotoClient _photoClient;
 
@@ -132,9 +139,9 @@
 
     string SelectedGallery { get; set; }
 
-    bool DisableInput = false;
-    long ProgressNow { get; set; } = 0;
-    long ProgressMax { get; set; } = 100;
+    readonly bool DisableInput = false;
+    long ProgressNow { get; set; }
+    long ProgressMax { get; } = 100;
     string ProgressStyle { get; set; } = "width: 0%;";
     string ProgressMessage { get; set; }
 
@@ -145,7 +152,7 @@
 
     public string Message { get; set; }
 
-    private int maxAllowedFiles = 3;
+    private readonly int maxAllowedFiles = 3;
 
     protected override async Task OnInitializedAsync()
     {
@@ -166,7 +173,7 @@
             var albumClient = await ServiceClientFactory.CreateAlbumClient();
             AlbumWrapper = new AlbumWrapper(await albumClient.GetAlbumByIdAsync(AlbumId));
 
-            this._photoClient = await ServiceClientFactory.CreatePhotoClient();
+            _photoClient = await ServiceClientFactory.CreatePhotoClient();
             await ReloadPhotos();
 
             _ = ReadCommunicationEvents();
@@ -184,7 +191,7 @@
                 AlbumPhotos.Add(new PhotoWrapper(photo));
             }
 
-            this.Loaded = true;
+            Loaded = true;
         }
         catch (Exception)
         {
@@ -200,12 +207,12 @@
             if (evnt == null)
                 continue;
 
-            foreach (var photoWrapper in this.AlbumPhotos)
+            foreach (var photoWrapper in AlbumPhotos)
             {
                 if (string.Equals(photoWrapper.Photo.PhotoId, evnt.ResourceId, StringComparison.Ordinal))
                 {
                     photoWrapper.Update(evnt);
-                    this.StateHasChanged();
+                    StateHasChanged();
                 }
             }
         }
@@ -213,27 +220,25 @@
 
     private async Task SubmitForm()
     {
-
         long maxFileSize = 1024 * 1024 * 15;
 
         foreach (var file in loadedFiles)
         {
             using (var stream = file.OpenReadStream(maxFileSize))
             {
-                var uploadUrl = await FileUploader.UploadFileAsync(stream, (evnt) =>
+                var uploadUrl = await FileUploader.UploadFileAsync(stream, evnt =>
                 {
-                    this.ProgressNow = evnt.UploadBytes;
+                    ProgressNow = evnt.UploadBytes;
 
-                    var percent = (int)((double)evnt.UploadBytes / (double)this.ProgressMax * 100.0);
-                    this.ProgressStyle = $"width: {percent}%;";
+                    var percent = (int) (evnt.UploadBytes / (double) ProgressMax * 100.0);
+                    ProgressStyle = $"width: {percent}%;";
 
-                    this.ProgressMessage = $"Bytes read: {this.ProgressNow} / {this.ProgressMax}, Parts upload: {evnt.UploadParts}";
+                    ProgressMessage = $"Bytes read: {ProgressNow} / {ProgressMax}, Parts upload: {evnt.UploadParts}";
 
-                    this.StateHasChanged();
+                    StateHasChanged();
                 });
 
                 await _photoClient.AddPhotoAsync(AlbumId, file.Name, uploadUrl);
-
             }
         }
 

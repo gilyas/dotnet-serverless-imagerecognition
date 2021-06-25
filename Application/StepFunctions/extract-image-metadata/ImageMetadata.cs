@@ -1,11 +1,6 @@
-﻿using Common;
-using SixLabors.ImageSharp.Metadata;
+﻿using System;
+using Common;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace extract_image_metadata
 {
@@ -19,13 +14,14 @@ namespace extract_image_metadata
 
         public int Width { get; set; }
 
-        public decimal OrignalImagePixelCount { get; set; }
+        public decimal OriginalImagePixelCount { get; set; }
 
         public long Size { get; set; }
 
         //public IReadOnlyCollection<IExifValue> ExifProfile { get; set; }
 
-        public string ExifProfileBase64 => ExifProfile != null ? Convert.ToBase64String(ExifProfile.ToByteArray()) : string.Empty;
+        public string ExifProfileBase64 =>
+            ExifProfile != null ? Convert.ToBase64String(ExifProfile.ToByteArray()) : string.Empty;
 
         public ExifProfile ExifProfile { get; set; }
     }

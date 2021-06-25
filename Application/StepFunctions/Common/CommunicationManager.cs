@@ -1,35 +1,31 @@
 ﻿using System;
-
-using Amazon;
-using Amazon.Runtime;
-
-using Amazon.ApiGatewayManagementApi;
-using Amazon.ApiGatewayManagementApi.Model;
-
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-
-using Newtonsoft.Json;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
+using Amazon;
+using Amazon.ApiGatewayManagementApi;
+using Amazon.ApiGatewayManagementApi.Model;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Amazon.Runtime;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 
 namespace Common
 {
     public class CommunicationManager
     {
-        const string ConnectionIdField = "connectionId";
-        const string UsernameField = "username";
-        const string EndpointField = "endpoint";
-        const string LoginDateField = "logindate";
+        private const string ConnectionIdField = "connectionId";
+        private const string UsernameField = "username";
+        private const string EndpointField = "endpoint";
+        private const string LoginDateField = "logindate";
+
+        private readonly MemoryCache _connectionsCache = new MemoryCache(new MemoryCacheOptions());
+        private readonly IAmazonDynamoDB _ddbClient;
 
 
-        string _ddbTableName;
-        IAmazonDynamoDB _ddbClient;
-
-        MemoryCache _connectionsCache = new MemoryCache(new MemoryCacheOptions());
+        private readonly string _ddbTableName;
 
         private CommunicationManager(AWSCredentials awsCredentials, RegionEndpoint region, string ddbTableName)
         {
@@ -38,14 +34,16 @@ namespace Common
         }
 
 
-        public static CommunicationManager CreateManager(AWSCredentials awsCredentials, RegionEndpoint region, string ddbTableName)
+        public static CommunicationManager CreateManager(AWSCredentials awsCredentials, RegionEndpoint region,
+            string ddbTableName)
         {
             return new CommunicationManager(awsCredentials, region, ddbTableName);
         }
 
         public static CommunicationManager CreateManager(string ddbTableName)
         {
-            return CreateManager(FallbackCredentialsFactory.GetCredentials(), FallbackRegionFactory.GetRegionEndpoint(), ddbTableName);
+            return CreateManager(FallbackCredentialsFactory.GetCredentials(), FallbackRegionFactory.GetRegionEndpoint(),
+                ddbTableName);
         }
 
         public async Task SendMessage(MessageEvent evnt)
@@ -54,12 +52,12 @@ namespace Common
                 return;
 
             var payload = JsonConvert.SerializeObject(evnt);
-            var stream = new MemoryStream(UTF8Encoding.UTF8.GetBytes(payload));
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
 
 
             QueryResponse queryResponse;
-            ICacheEntry entry;
-            if(!_connectionsCache.TryGetValue(evnt.TargetUser, out entry) || entry.AbsoluteExpiration < DateTime.UtcNow)
+            if (!_connectionsCache.TryGetValue(evnt.TargetUser, out ICacheEntry entry) ||
+                entry.AbsoluteExpiration < DateTime.UtcNow)
             {
                 var queryRequest = new QueryRequest
                 {
@@ -68,7 +66,7 @@ namespace Common
                     KeyConditionExpression = $"{UsernameField} = :u",
                     ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                     {
-                        { ":u", new AttributeValue{S = evnt.TargetUser } }
+                        {":u", new AttributeValue {S = evnt.TargetUser}}
                     }
                 };
                 queryResponse = await _ddbClient.QueryAsync(queryRequest);
@@ -118,17 +116,14 @@ namespace Common
                     {
                         await apiClient.PostToConnectionAsync(postConnectionRequest);
                     }
-                    catch(GoneException)
+                    catch (GoneException)
                     {
                         goneConnections.Add(item);
                     }
                 }
 
                 // Remove connections from the cache that have disconnected.
-                foreach(var goneConnectionItem in goneConnections)
-                {
-                    queryResponse.Items.Remove(goneConnectionItem);
-                }
+                foreach (var goneConnectionItem in goneConnections) queryResponse.Items.Remove(goneConnectionItem);
             }
             catch
             {
@@ -136,10 +131,7 @@ namespace Common
             }
             finally
             {
-                if (apiClient != null)
-                {
-                    apiClient.Dispose();
-                }
+                apiClient?.Dispose();
             }
         }
     }

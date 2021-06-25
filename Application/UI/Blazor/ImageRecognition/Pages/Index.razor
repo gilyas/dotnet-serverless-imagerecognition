@@ -1,6 +1,4 @@
 ﻿@page "/"
-@using ImageRecognition.BlazorFrontend.Models
-@using System.Threading;
 
 @inject IServiceClientFactory ServiceClientFactory
 @inject NavigationManager NavigationManager
@@ -8,7 +6,7 @@
 <div class="col-md-12 ui segment form-group">
     <h3 class="ui header">Add a new album</h3>
     <div class="form-group">
-        <input class="form-control" type="text" @bind="@AlbumName" id="name" aria-label="Album name" placeholder="Album name" required />
+        <input class="form-control" type="text" @bind="@AlbumName" id="name" aria-label="Album name" placeholder="Album name" required/>
     </div>
     <button class="btn btn-primary" @onclick="SubmitForm">New album</button>
 </div>
@@ -17,9 +15,9 @@
     <h3 class="ui header">My Albums</h3>
     <div role="list" class="ui divided relaxed list">
 
-        @if (this.UserAlbums != null)
+        @if (UserAlbums != null)
         {
-            @foreach (var userAlbum in this.UserAlbums)
+            @foreach (var userAlbum in UserAlbums)
             {
                 <div role="listitem" class="item">
                     <a href="/album/@userAlbum.AlbumId/">@userAlbum.Name</a>
@@ -30,7 +28,7 @@
     </div>
 </div>
 
-@if (!this.Loaded)
+@if (!Loaded)
 {
     <p>
         <div class="d-flex align-items-center">
@@ -43,7 +41,7 @@
 @code {
 
     bool Loaded { get; set; }
-    List<Album> UserAlbums = new List<Album>();
+    readonly List<Album> UserAlbums = new();
 
     public string AlbumName { get; set; }
 
@@ -66,7 +64,7 @@
                 UserAlbums.Add(album);
             }
 
-            this.Loaded = true;
+            Loaded = true;
         }
         catch (Exception)
         {
@@ -74,11 +72,11 @@
         }
     }
 
-    async Task SubmitForm() {
-
+    async Task SubmitForm()
+    {
         var createAlbumResult = await _albumClient.CreateAlbumAsync(AlbumName);
 
-        var album = new Album()
+        var album = new Album
         {
             Name = AlbumName,
             AlbumId = createAlbumResult.AlbumId

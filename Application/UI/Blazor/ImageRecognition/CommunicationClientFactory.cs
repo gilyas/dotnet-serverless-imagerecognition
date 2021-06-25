@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components.Authorization;
-using Amazon.Extensions.CognitoAuthentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Amazon.AspNetCore.Identity.Cognito;
 using System.Net.WebSockets;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
+using Amazon.AspNetCore.Identity.Cognito;
+using Amazon.Extensions.CognitoAuthentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace ImageRecognition.BlazorFrontend
 {
-
     public interface ICommunicationClientFactory
     {
         Task<ICommunicationClient> CreateCommunicationClient(CancellationToken token);
@@ -26,30 +20,31 @@ namespace ImageRecognition.BlazorFrontend
 
     public class CommunicationClientFactory : ICommunicationClientFactory
     {
-        AppOptions _appOptions;
-        AuthenticationStateProvider _authenticationStateProvider;
-        CognitoUserManager<CognitoUser> _cognitoUserManager;
+        private readonly AppOptions _appOptions;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly CognitoUserManager<CognitoUser> _cognitoUserManager;
 
-        public CommunicationClientFactory(IOptions<AppOptions> appOptions, AuthenticationStateProvider authenticationStateProvider, UserManager<CognitoUser> userManager)
+        public CommunicationClientFactory(IOptions<AppOptions> appOptions,
+            AuthenticationStateProvider authenticationStateProvider, UserManager<CognitoUser> userManager)
         {
-            this._appOptions = appOptions.Value;
+            _appOptions = appOptions.Value;
 
-            this._authenticationStateProvider = authenticationStateProvider;
-            this._cognitoUserManager = userManager as CognitoUserManager<CognitoUser>;
+            _authenticationStateProvider = authenticationStateProvider;
+            _cognitoUserManager = userManager as CognitoUserManager<CognitoUser>;
         }
 
         public async Task<ICommunicationClient> CreateCommunicationClient(CancellationToken token)
         {
-            var authState = await this._authenticationStateProvider.GetAuthenticationStateAsync();
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
             if (!user.Identity.IsAuthenticated)
                 throw new Exception();
 
-            var userId = this._cognitoUserManager.GetUserId(user);
+            var userId = _cognitoUserManager.GetUserId(user);
             if (string.IsNullOrEmpty(userId))
                 throw new Exception();
 
-            var cognitoUser = await this._cognitoUserManager.FindByIdAsync(userId);
+            var cognitoUser = await _cognitoUserManager.FindByIdAsync(userId);
             if (string.IsNullOrEmpty(cognitoUser?.SessionTokens.IdToken))
                 throw new Exception();
 
@@ -60,7 +55,6 @@ namespace ImageRecognition.BlazorFrontend
 
             return new CommunicationClient(cws);
         }
-
     }
 
 
@@ -71,9 +65,9 @@ namespace ImageRecognition.BlazorFrontend
 
     public class CommunicationClient : ICommunicationClient
     {
-        ClientWebSocket _cws;
-        byte[] _buffer;
-        Memory<byte> _memoryBlock;
+        private readonly byte[] _buffer;
+        private readonly ClientWebSocket _cws;
+        private readonly Memory<byte> _memoryBlock;
 
 
         public CommunicationClient(ClientWebSocket cws)
@@ -88,25 +82,23 @@ namespace ImageRecognition.BlazorFrontend
         {
             try
             {
-                var recvResult = await this._cws.ReceiveAsync(this._memoryBlock, token);
+                var recvResult = await _cws.ReceiveAsync(_memoryBlock, token);
 
-                if (WebSocketMessageType.Text != recvResult.MessageType)
-                {
-                    return null;
-                }
+                if (WebSocketMessageType.Text != recvResult.MessageType) return null;
 
-                var content = UTF8Encoding.UTF8.GetString(this._buffer, 0, recvResult.Count);
+                var content = Encoding.UTF8.GetString(_buffer, 0, recvResult.Count);
                 var evnt = JsonConvert.DeserializeObject<MessageEvent>(content);
                 return evnt;
             }
-            catch(TaskCanceledException)
+            catch (TaskCanceledException)
             {
                 return null;
             }
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -117,6 +109,7 @@ namespace ImageRecognition.BlazorFrontend
                     ArrayPool<byte>.Shared.Return(_buffer);
                     _cws.Dispose();
                 }
+
                 disposedValue = true;
             }
         }
@@ -125,6 +118,7 @@ namespace ImageRecognition.BlazorFrontend
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

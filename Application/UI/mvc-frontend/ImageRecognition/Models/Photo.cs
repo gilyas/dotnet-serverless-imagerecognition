@@ -1,11 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ImageRecognition.Frontend.Models
 {
-    public enum ProcessingStatus { Pending = 0, Running = 1, Succeeded = 2, Failed = 3, Timed_Out = 4, Aborted = 5 }
+    public enum ProcessingStatus
+    {
+        Pending = 0,
+        Running = 1,
+        Succeeded = 2,
+        Failed = 3,
+        Timed_Out = 4,
+        Aborted = 5
+    }
 
     public class Photo
     {

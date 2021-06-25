@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
-
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Common;
@@ -15,19 +10,20 @@ using SixLabors.ImageSharp.Formats;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 //[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 [assembly: LambdaSerializer(typeof(NewtonJsonSerializer))]
+
 namespace extract_image_metadata
 {
     public class Function
     {
-        IAmazonS3 S3Client { get; set; }
-
         public Function()
         {
-            this.S3Client = new AmazonS3Client();
+            S3Client = new AmazonS3Client();
         }
 
+        private IAmazonS3 S3Client { get; }
+
         /// <summary>
-        /// A simple function that takes a s3 bucket input and extract metadata of Image.
+        ///     A simple function that takes a s3 bucket input and extract metadata of Image.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="context"></param>
@@ -36,18 +32,16 @@ namespace extract_image_metadata
         {
             var logger = new ImageRecognitionLogger(state, context);
 
-            string srcKey = WebUtility.UrlDecode(state.SourceKey);
+            var srcKey = WebUtility.UrlDecode(state.SourceKey);
             var tmpPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(srcKey));
             try
             {
-                ImageMetadata metadata = new ImageMetadata(); 
+                var metadata = new ImageMetadata();
                 using (var response = await S3Client.GetObjectAsync(state.Bucket, srcKey))
                 {
-                    IImageFormat format;
-                    
-                    using (var sourceImage = Image.Load(response.ResponseStream, out format))
+                    using (var sourceImage = Image.Load(response.ResponseStream, out var format))
                     {
-                        metadata.OrignalImagePixelCount = sourceImage.Width * sourceImage.Height;
+                        metadata.OriginalImagePixelCount = sourceImage.Width * sourceImage.Height;
 
                         metadata.Width = sourceImage.Width;
 
@@ -59,16 +53,14 @@ namespace extract_image_metadata
                     }
                 }
 
-                await logger.WriteMessageAsync(new MessageEvent { Message = "Photo metadata extracted succesfully" }, ImageRecognitionLogger.Target.All);
+                await logger.WriteMessageAsync(new MessageEvent {Message = "Photo metadata extracted succesfully"},
+                    ImageRecognitionLogger.Target.All);
 
                 return metadata;
             }
             finally
             {
-                if (File.Exists(tmpPath))
-                {
-                    File.Delete(tmpPath);
-                }
+                if (File.Exists(tmpPath)) File.Delete(tmpPath);
             }
         }
     }
