@@ -61,7 +61,6 @@ namespace ImageRecognition.BlazorFrontend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
             }
             else
             {
