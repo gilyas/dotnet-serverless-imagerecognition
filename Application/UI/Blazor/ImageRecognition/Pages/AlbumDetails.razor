@@ -5,7 +5,6 @@
 @implements IDisposable
 
 @inject IServiceClientFactory ServiceClientFactory
-@inject ICommunicationClientFactory CommunicationClientFactory
 @inject NavigationManager NavigationManager
 @inject IFileUploader FileUploader
 
@@ -132,9 +131,6 @@
 
     PhotoClient _photoClient;
 
-    CancellationTokenSource _cancelSource;
-    ICommunicationClient _communicationClient;
-
     string Name { get; set; }
 
     string SelectedGallery { get; set; }
@@ -154,14 +150,6 @@
 
     private readonly int maxAllowedFiles = 3;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _cancelSource = new CancellationTokenSource();
-
-        _communicationClient = await CommunicationClientFactory.CreateCommunicationClient(_cancelSource.Token);
-    }
-
-
     protected override async Task OnParametersSetAsync()
     {
         if (string.IsNullOrEmpty(AlbumId))
@@ -175,8 +163,6 @@
 
             _photoClient = await ServiceClientFactory.CreatePhotoClient();
             await ReloadPhotos();
-
-            _ = ReadCommunicationEvents();
         }
     }
 
@@ -196,25 +182,6 @@
         catch (Exception)
         {
             NavigationManager.NavigateTo("Identity/Account/Login", true);
-        }
-    }
-
-    async Task ReadCommunicationEvents()
-    {
-        while (!_cancelSource.IsCancellationRequested)
-        {
-            var evnt = await _communicationClient.ReadEventAsync(_cancelSource.Token);
-            if (evnt == null)
-                continue;
-
-            foreach (var photoWrapper in AlbumPhotos)
-            {
-                if (string.Equals(photoWrapper.Photo.PhotoId, evnt.ResourceId, StringComparison.Ordinal))
-                {
-                    photoWrapper.Update(evnt);
-                    StateHasChanged();
-                }
-            }
         }
     }
 
@@ -254,15 +221,8 @@
         }
     }
 
-
     public void Dispose()
     {
-        if (_communicationClient != null)
-        {
-            _cancelSource.Cancel();
-            _communicationClient.Dispose();
-            _communicationClient = null;
-        }
     }
 
 }

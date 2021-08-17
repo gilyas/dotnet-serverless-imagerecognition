@@ -38,11 +38,6 @@
             "Default": "/ImageRecognition/SubnetB"
         },
 
-        "SubnetC": {
-            "Type": "AWS::SSM::Parameter::Value<String>",
-            "Default": "/ImageRecognition/SubnetC"
-        },
-
         "LoadBalancerName": {
             "Type": "AWS::SSM::Parameter::Value<String>",
             "Default": "/ImageRecognition/LoadBalancerName"
@@ -192,9 +187,6 @@
                             },
                             {
                                 "Ref": "SubnetB"
-                            },
-                            {
-                                "Ref": "SubnetC"
                             }
                         ]
                     }

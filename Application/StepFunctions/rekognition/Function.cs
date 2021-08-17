@@ -64,9 +64,7 @@ namespace rekognition
         /// <returns></returns>
         public async Task<List<Label>> FunctionHandler(ExecutionInput input, ILambdaContext context)
         {
-            var logger = new ImageRecognitionLogger(input, context);
-
-            Console.WriteLine($"Looking for labels in image {input.Bucket}:{input.SourceKey}");
+            context.Logger.LogLine($"Looking for labels in image {input.Bucket}:{input.SourceKey}");
 
             var key = WebUtility.UrlDecode(input.SourceKey);
 
@@ -84,8 +82,7 @@ namespace rekognition
                 }
             });
 
-            await logger.WriteMessageAsync(new MessageEvent {Message = "Photo labels extracted successfully"},
-                ImageRecognitionLogger.Target.All);
+            context.Logger.LogLine("Photo labels extracted successfully");
 
             return detectResponses.Labels;
         }

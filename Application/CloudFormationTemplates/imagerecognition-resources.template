@@ -144,53 +144,34 @@
             }
         },
 
-        "TableCommunicationConnection": {
-            "Type": "AWS::DynamoDB::Table",
+		"FrontendCluster": {
+            "Type": "AWS::ECS::Cluster",
             "Description": "",
             "Properties": {
-                "AttributeDefinitions": [
-                    {
-                        "AttributeName": "connectionId",
-                        "AttributeType": "S"
-                    },
-					{
-						"AttributeName" : "username",
-                        "AttributeType" : "S"
-					}
-                ],
-                "KeySchema": [
-					{
-						"AttributeName": "connectionId",
-						"KeyType": "HASH"
-					}
-                ],
-                "GlobalSecondaryIndexes" : [
-					{
-						"IndexName" : "username",
-                        "KeySchema" : [
-							{
-								"AttributeName" : "username",
-                                "KeyType" : "HASH"
-							}
-						],
-                        "Projection" : {
-							"ProjectionType" : "ALL"
-						}
-					}
-				],
-                "BillingMode" : "PAY_PER_REQUEST",
-                "TableName": {
+                "ClusterName": {
                     "Fn::Join": [
                         "-",
                         [
                             {
                                 "Ref": "AWS::StackName"
                             },
-                            "CommunicationConnections"
+                            "Frontend"
                         ]
                     ]
                 }
             }
+        },
+
+		"ImageRecognitionArtifactStore" : {
+		    "Type" : "AWS::S3::Bucket",
+		    "Properties" : {
+		    }
+		},
+
+        "PhotoStorageBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Description": "",
+            "Properties": {}
         },
 
         "FrontendRepository": {
@@ -247,26 +228,6 @@
                 "AvailabilityZone": {
                     "Fn::Select": [
                         "1",
-                        {
-                            "Fn::GetAZs": ""
-                        }
-                    ]
-                }
-            }
-        },
-
-        "SubnetC": {
-            "Type": "AWS::EC2::Subnet",
-            "Description": "Public subnet",
-            "Properties": {
-                "CidrBlock": "10.0.2.0/24",
-                "VpcId": {
-                    "Ref": "ImageRecognitionVpc"
-                },
-                "MapPublicIpOnLaunch": "True",
-                "AvailabilityZone": {
-                    "Fn::Select": [
-                        "2",
                         {
                             "Fn::GetAZs": ""
                         }
@@ -340,19 +301,6 @@
                 },
                 "SubnetId": {
                     "Ref": "SubnetB"
-                }
-            }
-        },
-
-        "SubnetCRouteTableAssociation": {
-            "Type": "AWS::EC2::SubnetRouteTableAssociation",
-            "Description": "Route table association to permit traffic in subnet to reach gateway.",
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "RouteTable"
-                },
-                "SubnetId": {
-                    "Ref": "SubnetC"
                 }
             }
         },
@@ -462,9 +410,6 @@
                     },
                     {
                         "Ref": "SubnetB"
-                    },
-                    {
-                        "Ref": "SubnetC"
                     }
                 ]
             }
@@ -556,15 +501,36 @@
             }
         },
 
-        "ParameterTableCommunicationConnections": {
+        "ParameterFrontendCluster": {
             "Type": "AWS::SSM::Parameter",
-            "Description": "Stores the connection ids for the websocket connections made in the client.",
+            "Description": "Stores the ID of the cluster defined for our Fargate instances into Parameter Store.",
             "Properties": {
                 "Type": "String",
                 "Value": {
-                    "Ref": "TableCommunicationConnection"
+                    "Ref": "FrontendCluster"
                 },
-                "Name": "/ImageRecognition/AppOptions/TableCommunicationConnection"
+                "Name": "/ImageRecognition/FrontendCluster"
+            }
+        },
+
+        "ParameterImageRecognitionArtifactStore" : {
+            "Type" : "AWS::SSM::Parameter",
+            "Properties" : {
+                "Type" : "String",
+                "Value" : {"Ref" : "ImageRecognitionArtifactStore"},
+                "Name" : "/ImageRecognition/ImageRecognitionArtifactStore"
+            }
+        },
+
+        "ParameterPhotoStorageBucket": {
+            "Type": "AWS::SSM::Parameter",
+            "Description": "Stores the name of the S3 storage bucket to Parameter Store.",
+            "Properties": {
+                "Type": "String",
+                "Value": {
+                    "Ref": "PhotoStorageBucket"
+                },
+                "Name": "/ImageRecognition/AppOptions/PhotoStorageBucket"
             }
         },
 
@@ -633,18 +599,6 @@
                     "Ref": "SubnetB"
                 },
                 "Name": "/ImageRecognition/SubnetB"
-            }
-        },
-
-        "ParameterSubnetC": {
-            "Type": "AWS::SSM::Parameter",
-            "Description": "Stores the ID of a one of our subnets for our Fargate instances into Parameter Store.",
-            "Properties": {
-                "Type": "String",
-                "Value": {
-                    "Ref": "SubnetC"
-                },
-                "Name": "/ImageRecognition/SubnetC"
             }
         },
 

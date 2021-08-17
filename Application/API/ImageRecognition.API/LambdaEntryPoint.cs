@@ -32,7 +32,6 @@ namespace ImageRecognition.API
         protected override void Init(IWebHostBuilder builder)
         {
             builder
-                .ConfigureAppConfiguration(builder => { builder.AddSystemsManager("/ImageRecognition"); })
                 .UseStartup<Startup>();
         }
 

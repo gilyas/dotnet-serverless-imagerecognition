@@ -31,31 +31,6 @@ namespace ImageRecognition.BlazorFrontend.Models
             }
         }
 
-        public void Update(MessageEvent evnt)
-        {
-            if (string.Equals(Photo.PhotoId, evnt.ResourceId, StringComparison.Ordinal))
-            {
-                if (evnt.CompleteEvent)
-                {
-                    var photo = JsonConvert.DeserializeObject<Photo>(evnt.Data);
-
-                    var signedThumbnailUrl = Photo.Thumbnail.Url;
-                    var signedFullSizeUrl = Photo.FullSize.Url;
-
-                    if (photo != null) Photo = photo;
-
-                    Photo.Thumbnail.Url = signedThumbnailUrl;
-                    Photo.FullSize.Url = signedFullSizeUrl;
-                    Photo.ProcessingStatus = ProcessingStatus.Succeeded;
-                    Status = ProcessingStatus.Succeeded.ToString();
-                }
-                else
-                {
-                    Status = evnt.Message;
-                }
-            }
-        }
-
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;

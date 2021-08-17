@@ -36,8 +36,6 @@ namespace thumbnail
         /// <returns></returns>
         public async Task<ThumbnailInfo> FunctionHandler(Input input, ILambdaContext context)
         {
-            var logger = new ImageRecognitionLogger(input, context);
-
             var size = input.ExtractedMetadata.Dimensions;
 
             var scalingFactor = Math.Min(
@@ -65,8 +63,7 @@ namespace thumbnail
                     InputStream = stream
                 });
 
-                await logger.WriteMessageAsync(new MessageEvent {Message = "Photo thumbnail created"},
-                    ImageRecognitionLogger.Target.All);
+                context.Logger.LogLine("Photo thumbnail created");
 
                 return new ThumbnailInfo(width, height, destinationKey, input.Bucket);
             }

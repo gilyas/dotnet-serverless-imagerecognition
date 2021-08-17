@@ -39,8 +39,6 @@ namespace store_image_metadata
         /// <returns></returns>
         public async Task FunctionHandler(InputEvent input, ILambdaContext context)
         {
-            var logger = new ImageRecognitionLogger(input, context);
-
             var thumbnail = JsonSerializer.Deserialize<Thumbnail>(JsonSerializer.Serialize(input.ParallelResults[1]));
 
             var labels = JsonSerializer.Deserialize<List<Label>>(JsonSerializer.Serialize(input.ParallelResults[0]));
@@ -74,10 +72,7 @@ namespace store_image_metadata
 
             var data = JsonSerializer.Serialize(photoUpdate);
 
-            await logger.WriteMessageAsync(
-                new MessageEvent
-                    {Message = "Photo recognition metadata stored succesfully", Data = data, CompleteEvent = true},
-                ImageRecognitionLogger.Target.All);
+            context.Logger.LogLine("Photo recognition metadata stored succesfully");
 
             Console.WriteLine(data);
         }

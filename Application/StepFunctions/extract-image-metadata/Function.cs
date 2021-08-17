@@ -8,8 +8,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-//[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-[assembly: LambdaSerializer(typeof(NewtonJsonSerializer))]
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace extract_image_metadata
 {
@@ -30,38 +29,28 @@ namespace extract_image_metadata
         /// <returns></returns>
         public async Task<ImageMetadata> FunctionHandler(ExecutionInput state, ILambdaContext context)
         {
-            var logger = new ImageRecognitionLogger(state, context);
-
             var srcKey = WebUtility.UrlDecode(state.SourceKey);
-            var tmpPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(srcKey));
-            try
+            
+            var metadata = new ImageMetadata();
+            using (var response = await S3Client.GetObjectAsync(state.Bucket, srcKey))
             {
-                var metadata = new ImageMetadata();
-                using (var response = await S3Client.GetObjectAsync(state.Bucket, srcKey))
+                using (var sourceImage = Image.Load(response.ResponseStream, out var format))
                 {
-                    using (var sourceImage = Image.Load(response.ResponseStream, out var format))
-                    {
-                        metadata.OriginalImagePixelCount = sourceImage.Width * sourceImage.Height;
+                    metadata.OriginalImagePixelCount = sourceImage.Width * sourceImage.Height;
 
-                        metadata.Width = sourceImage.Width;
+                    metadata.Width = sourceImage.Width;
 
-                        metadata.Height = sourceImage.Height;
+                    metadata.Height = sourceImage.Height;
 
-                        metadata.ExifProfile = sourceImage.Metadata.ExifProfile;
+                    metadata.ExifProfile = sourceImage.Metadata.ExifProfile;
 
-                        metadata.Format = format.Name;
-                    }
+                    metadata.Format = format.Name;
                 }
-
-                await logger.WriteMessageAsync(new MessageEvent {Message = "Photo metadata extracted succesfully"},
-                    ImageRecognitionLogger.Target.All);
-
-                return metadata;
             }
-            finally
-            {
-                if (File.Exists(tmpPath)) File.Delete(tmpPath);
-            }
+
+            context.Logger.LogLine("Photo metadata extracted succesfully");
+
+            return metadata;
         }
     }
 }

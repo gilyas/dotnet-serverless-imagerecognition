@@ -11,5 +11,6 @@
   "package-type": "image",
   "function-memory-size": 256,
   "function-timeout": 30,
-  "image-command": "extract-image-metadata::extract_image_metadata.Function::FunctionHandler"
+  "image-command": "extract-image-metadata::extract_image_metadata.Function::FunctionHandler",
+  "docker-host-build-output-dir": "./bin/Release/net5.0/linux-x64/publish"
 }
