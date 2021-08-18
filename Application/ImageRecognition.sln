@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{E94B8A90-34BD-4F82-B641-1254DDF37CCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StepFunctions", "StepFunctions", "{45115497-E073-4E7E-AA88-92D17D7F45E9}"
+	ProjectSection(SolutionItems) = preProject
+		StepFunctions\aws-lambda-tools-defaults.json = StepFunctions\aws-lambda-tools-defaults.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "S3Trigger", "S3Trigger", "{33BA9BD1-DE13-42C8-91F4-4B29DE1494A3}"
 EndProject

@@ -16,5 +16,5 @@
   "template": "serverless.template",
   "stack-name": "ImageRecognitionAPI",
   "s3-prefix": "image-recognition/api",
-  "s3-bucket": "dotnet-image-recognition"
+  "s3-bucket": ""
 }

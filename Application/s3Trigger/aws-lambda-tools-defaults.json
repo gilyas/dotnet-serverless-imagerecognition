@@ -16,5 +16,5 @@
   "template": "serverless.template",
   "stack-name": "TriggerStepFunction",
   "s3-prefix": "image-recognition/s3Trigger",
-  "s3-bucket": "dotnet-image-recognition"
+  "s3-bucket": ""
 }
